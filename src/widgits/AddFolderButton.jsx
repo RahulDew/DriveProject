@@ -63,13 +63,13 @@ const AddFolderButton = ({ icon, currentFolder }) => {
 
       {/* Add Folder or File Model */}
       {modelOpen && (
-        <div class="fixed inset-0 z-10 overflow-y-auto ">
-          <div class="fixed inset-0 bg-gray-800 opacity-70 transition-opacity"></div>
-          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+        <div className="fixed inset-0 z-10 overflow-y-auto ">
+          <div className="fixed inset-0 bg-gray-800 opacity-70 transition-opacity"></div>
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
               <form
                 onSubmit={handleSubmit}
-                class="flex flex-col gap-3 text-black px-4 pb-4 pt-5 sm:p-6 sm:pb-4"
+                className="flex flex-col gap-3 text-black px-4 pb-4 pt-5 sm:p-6 sm:pb-4"
               >
                 <h2 className="font-semibold text-xl">Enter Folder Name </h2>
                 <input
@@ -79,7 +79,7 @@ const AddFolderButton = ({ icon, currentFolder }) => {
                   onChange={(e) => setName(e.target.value)}
                   className="block w-full rounded-md border-1 p-3 text-lg outline-none text-gray-900 shadow-sm ring-1 ring-inset ring-gray-400 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:leading-6"
                 />
-                <div class="bg-gray-50 py-3 flex gap-3 w-full">
+                <div className="bg-gray-50 py-3 flex gap-3 w-full">
                   <button
                     type="button"
                     onClick={handleCloseModel}
@@ -98,7 +98,7 @@ const AddFolderButton = ({ icon, currentFolder }) => {
                   <div role="status" className="my-3 text-center">
                     <svg
                       aria-hidden="true"
-                      class="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600"
+                      className="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600"
                       viewBox="0 0 100 101"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +112,7 @@ const AddFolderButton = ({ icon, currentFolder }) => {
                         fill="currentFill"
                       />
                     </svg>
-                    <span class="sr-only">Loading...</span>
+                    <span className="sr-only">Loading...</span>
                   </div>
                 )}
               </form>

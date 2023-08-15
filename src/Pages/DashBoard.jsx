@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useFolder } from "../hooks/useFolder";
@@ -11,12 +11,14 @@ import { AiFillFolderAdd, AiFillFileAdd } from "react-icons/ai";
 import Folder from "../components/Folder";
 import File from "../components/File";
 import FolderBreadCrumb from "../components/FolderBreadCrumb";
+import Loader from "../components/Loader";
 
 const DashBoard = () => {
   const Navigate = useNavigate();
   const { folderId } = useParams();
   const { state = {} } = useLocation();
   const { logOut } = useAuthContext();
+  const [loading, setLoading] = useState();
 
   // console.log(state);
   const { folder, childFolders, childFiles } = useFolder(folderId);
@@ -50,29 +52,38 @@ const DashBoard = () => {
       {/* parent folders */}
       {/* {folder && <Folder folder={folder} />} */}
 
-    
       {/* Child Folders */}
-      {childFolders && (
+      {!childFolders && childFolders == [] ? (
+        <>
+          <Loader />
+        </>
+      ) : (
         <div className="px-5 bg-opacity-10 flex flex-row flex-wrap justify-start items-center gap-5 ">
-          {childFolders.map((childFolder) => (
-            <div key={childFolder.id} className="">
-              <Folder folder={childFolder} />
-            </div>
-          ))}
+          {childFolders
+            .map((childFolder) => (
+              <div key={childFolder.id} className="">
+                <Folder folder={childFolder}/>
+              </div>
+            ))
+            .reverse()}
         </div>
       )}
-
+      {/* <Loader/> */}
       <hr className="font-bold border-slate-600 my-5" />
 
       {/* Child Folders */}
-      {childFiles && (
+      {childFiles && childFiles != [] ? (
         <div className="px-5 bg-opacity-10 flex flex-row flex-wrap justify-start items-center gap-5 ">
-          {childFiles.map((childFolder) => (
-            <div key={childFolder.id}>
-              <File file={childFolder} />
-            </div>
-          ))}
+          {childFiles
+            .map((childFolder) => (
+              <div key={childFolder.id}>
+                <File file={childFolder} />
+              </div>
+            ))
+            .reverse()}
         </div>
+      ) : (
+        <Loader />
       )}
     </div>
   );
