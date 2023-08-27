@@ -4,7 +4,8 @@ import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useFolder } from "../hooks/useFolder";
 import Navbar from "../components/Navbar";
 import AddFolderButton from "../widgits/AddFolderButton";
-import AddFileButton from "../widgits/addFileButton";
+// import AddFileButton from "../widgits/addFileButton";
+import AddFileButton from "../widgits/AddFileButton";
 
 import { AiFillFolderAdd, AiFillFileAdd } from "react-icons/ai";
 // import { FcHome } from "react-icons/fc";
@@ -25,20 +26,20 @@ const DashBoard = () => {
   // console.log("Parent Folder: ", folder);
   // console.log("Child Folders: ", childFolders);
   console.log("Child Files: ", childFiles);
-
-  const handleLogout = async () => {
-    try {
-      await logOut();
-      console.log("LoggedOut");
-      Navigate("login", { replace: true });
-    } catch (error) {
-      console.log("Can't get logged out");
-    }
-  };
+  
+  // const handleLogout = async () => {
+  //   try {
+  //     await logOut();
+  //     console.log("LoggedOut");
+  //     Navigate("login", { replace: true });
+  //   } catch (error) {
+  //     console.log("Can't get logged out");
+  //   }
+  // };
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen p-6 lg:px-8">
-      <Navbar handleLogout={handleLogout} />
+    <div className="bg-gray-900 text-center m-auto text-white min-h-screen p-6 lg:px-8">
+      <Navbar/>
 
       {/* Yahan se start h  */}
       <div className="flex justify-between items-center gap-2 mx-auto my-10">
@@ -73,7 +74,7 @@ const DashBoard = () => {
 
       {/* Child Folders */}
       {childFiles && childFiles != [] ? (
-        <div className="px-5 bg-opacity-10 flex flex-row flex-wrap justify-start items-center gap-5 ">
+        <div className=" px-1 sm:px-5 bg-opacity-10 flex flex-row flex-wrap justify-center items-center gap-5 ">
           {childFiles
             .map((childFolder) => (
               <div key={childFolder.id}>

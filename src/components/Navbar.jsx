@@ -1,11 +1,24 @@
 import React from "react";
+import { useAuthContext } from "../context/AuthContext";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 
-const Navbar = ({ handleLogout }) => {
+const Navbar = () => {
+  const Navigate = useNavigate();
+
+  const { logOut } = useAuthContext();
+
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      console.log("LoggedOut");
+      Navigate("login", { replace: true });
+    } catch (error) {
+      console.log("Can't get logged out");
+    }
+  };
+
   return (
-    <nav
-      className="flex items-center justify-between"
-      aria-label="Global"
-    >
+    <nav className="flex items-center justify-between" aria-label="Global">
       <div className="flex lg:flex-1">
         <a href="/" className="flex gap-3  -m-1.5 p-1.5">
           <img

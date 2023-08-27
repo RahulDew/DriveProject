@@ -28,6 +28,7 @@ import { Toast, ProgressBar, ToastHeader } from "react-bootstrap";
 
 const AddFileButton = ({ icon, currentFolder }) => {
   const [uploadingFiles, setUploadingFiles] = useState([]);
+  const [fileUploadProgress, setfileUploadProgress] = useState(null);
 
   const { currentUser } = useAuthContext();
   const id = uuidV4();
@@ -210,10 +211,16 @@ const AddFileButton = ({ icon, currentFolder }) => {
                   label={file.error ? "Error" : `${Math.round(file.progress)}%`}
                   className="bg-slate-300"
                 />
-                <div className="text-center my-2">Uploading...</div>
+                <div className="text-center my-2">Uploading... </div>
               </Toast.Body>
             </Toast>
           ))}
+          <div>
+            {uploadingFiles.length}
+            {uploadingFiles.map((file, index) => (
+              <div key={index}>{file.progress}</div>
+            ))}
+          </div>
         </div>
       )}
 
