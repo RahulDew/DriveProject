@@ -5,6 +5,7 @@ import { database } from "../config/firebase";
 import { formatter } from "../config/firebase";
 import { useAuthContext } from "../context/AuthContext";
 import { getDocs, query, where, onSnapshot } from "firebase/firestore";
+import Loader from "../components/Loader";
 // import { Timestamp } from "firebase/firestore";
 
 const Recents = () => {
@@ -15,6 +16,7 @@ const Recents = () => {
   const [searchText, setSearchText] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [searchedFiles, setSearchedFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   //getting current user
   const { currentUser } = useAuthContext();
@@ -23,19 +25,23 @@ const Recents = () => {
     clearTimeout(searchTimeout);
     setSearchText(e.target.value);
     // console.log(searchText);
-
+    setLoading(true);
+    // console.log("bhai loding set kr diya");
     setSearchTimeout(
       setTimeout(() => {
         // const searchResults = allFiles.map()
         const searchResults = allFiles.filter((file) => {
-          console.log(searchText, file.name);
+          // console.log(searchText, file.name);
           return file.name.toLowerCase().includes(searchText.toLowerCase());
         });
         console.log(searchResults);
         setSearchedFiles(searchResults);
+        setLoading(false);
+        // console.log("bhai loding hta diya");
+
         // console.log(allFiles);
 
-        console.log("running in every five seconds");
+        console.log("running in every 1 seconds");
         // console.log(searchText);
       }, 1000)
     );
@@ -51,20 +57,24 @@ const Recents = () => {
     // //   setAllFiles(Files);
     // };
     // getAllFiles();
+    setLoading(true);
+    // console.log("bhai loding set kr diya");
     onSnapshot(q, (snapshot) => {
       const files = snapshot.docs.map(formatter.formatDoc);
       setAllFiles(files);
-      console.log("Bhai Sare files: ", files);
+      // console.log("Bhai Sare files: ", files);
 
-      // recently added files within 8 days
+      // recently added files within 10 days
       const recentlyAddedFiles = files.filter((file) => {
-        if (new Date() - file.createdAt.toDate() <= 700000000) {
+        if (new Date() - file.createdAt.toDate() <= 900000000) {
           // console.log(new Date() - file.createdAt.toDate());
           // console.log(file);
           return file;
         }
       });
       setRecentFiles(recentlyAddedFiles);
+      setLoading(false);
+      // console.log("bhai loding hta diya");
       console.log("Recents files: ", recentlyAddedFiles);
     });
   }, []);
@@ -99,23 +109,35 @@ const Recents = () => {
 
         <hr className="font-bold border-slate-600 my-5" />
 
-        {recentFiles.length && !searchText ? (
+        {!searchText ? (
           <>
             <div className="my-5">
               <h1 className="text-white text-xl font-semibold">Recent Files</h1>
             </div>
-            <div className="flex flex-row flex-wrap justify-center items-center gap-5 ">
-              {recentFiles
-                .map((file) => (
-                  <div key={file.id}>
-                    <File file={file} />
-                    <p className="text-xs">
-                      {file.createdAt.toDate().toDateString()}
-                    </p>
+            {!loading ? (
+              <>
+                {recentFiles.length ? (
+                  <div className="flex flex-row flex-wrap justify-center items-center gap-5 ">
+                    {recentFiles
+                      .map((file) => (
+                        <div key={file.id}>
+                          <File file={file} />
+                          <p className="text-xs">
+                            {file.createdAt.toDate().toDateString()}
+                          </p>
+                        </div>
+                      ))
+                      .reverse()}
                   </div>
-                ))
-                .reverse()}
-            </div>
+                ) : (
+                  <h2 className="text-center">No Recent Files Available🪹</h2>
+                )}
+              </>
+            ) : (
+              <div className="flex items-center justify-center ">
+                <Loader />
+              </div>
+            )}
           </>
         ) : (
           <>
@@ -125,24 +147,29 @@ const Recents = () => {
               </h1>
               <p className="text-indigo-500 text-xl">{searchText}</p>
             </div>
-            {searchedFiles.length ? (
+            {!loading ? (
               <>
-                {/* <p>{JSON.stringify(searchedFiles)}</p> */}
-                <div className="flex flex-row flex-wrap justify-center items-center gap-5 ">
-                  {searchedFiles
-                    .map((file) => (
-                      <div key={file.id}>
-                        <File file={file} />
-                        <p className="text-xs">
-                          {file.createdAt.toDate().toDateString()}
-                        </p>
-                      </div>
-                    ))
-                    .reverse()}
-                </div>
+                {searchedFiles.length ? (
+                  <div className="flex flex-row flex-wrap justify-center items-center gap-5 ">
+                    {searchedFiles
+                      .map((file) => (
+                        <div key={file.id}>
+                          <File file={file} />
+                          <p className="text-xs">
+                            {file.createdAt.toDate().toDateString()}
+                          </p>
+                        </div>
+                      ))
+                      .reverse()}
+                  </div>
+                ) : (
+                  <h3 className="text-2xl text-center">No Files Found 🙁</h3>
+                )}
               </>
             ) : (
-              <h3 className="text-2xl text-center">No Files Found 🙁</h3>
+              <div className="flex items-center justify-center">
+                <Loader />
+              </div>
             )}
           </>
         )}

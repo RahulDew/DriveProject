@@ -28,7 +28,7 @@ import { Toast, ProgressBar, ToastHeader } from "react-bootstrap";
 
 const AddFileButton = ({ icon, currentFolder }) => {
   const [uploadingFiles, setUploadingFiles] = useState([]);
-  const [fileUploadProgress, setfileUploadProgress] = useState(null);
+  const [fileUploadProgress, setfileUploadProgress] = useState(0);
 
   const { currentUser } = useAuthContext();
   const id = uuidV4();
@@ -73,7 +73,7 @@ const AddFileButton = ({ icon, currentFolder }) => {
       (snapshot) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        // console.log("Uploading: ", progress);
+        // console.log("Uploading: ", Math.round(progress));
         setUploadingFiles((prevUploadingFiles) => {
           return prevUploadingFiles.map((uploadFile) => {
             if (uploadFile.id === id) {
@@ -158,6 +158,7 @@ const AddFileButton = ({ icon, currentFolder }) => {
 
         // rermoving the use of file uploading status whenever that file uploaded
         setUploadingFiles((prevUploadingFiles) => {
+          setfileUploadProgress(0);
           return prevUploadingFiles.filter((uploadFile) => {
             return uploadFile.id !== id;
           });
@@ -215,12 +216,13 @@ const AddFileButton = ({ icon, currentFolder }) => {
               </Toast.Body>
             </Toast>
           ))}
-          <div>
+          {/* <div>
             {uploadingFiles.length}
             {uploadingFiles.map((file, index) => (
               <div key={index}>{file.progress}</div>
             ))}
-          </div>
+          </div> */}
+          {/* <div>fileUploadProgress: {fileUploadProgress}</div> */}
         </div>
       )}
 

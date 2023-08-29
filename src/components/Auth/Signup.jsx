@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../context/AuthContext";
 import { FcGoogle } from "react-icons/fc";
@@ -140,12 +140,12 @@ const Signup = () => {
 
           <p className="mt-5 text-center text-sm text-gray-500">
             Already have Account?
-            <a
-              href="/login"
+            <Link
+              to={"/login"}
               className="font-semibold mx-2 leading-6 text-indigo-600 hover:text-indigo-500"
             >
               Login
-            </a>
+            </Link>
           </p>
         </div>
       </div>

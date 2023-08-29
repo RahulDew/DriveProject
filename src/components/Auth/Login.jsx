@@ -9,8 +9,10 @@ const Login = () => {
   const passwordRef = useRef();
 
   const Navigate = useNavigate();
+  
 
   const { logIn, signInWithGoogle } = useAuthContext();
+
   const [error, setError] = useState(null);
 
   const handleLogin = async (e) => {
@@ -114,12 +116,12 @@ const Login = () => {
 
           <p className="mt-5 text-center text-sm text-gray-500">
             Not have Account?
-            <a
-              href="/signup"
+            <Link to={"/signup"}
+              // href="/signup"
               className="font-semibold mx-2 leading-6 text-indigo-600 hover:text-indigo-500"
             >
               Signup
-            </a>
+            </Link>
             {/* <Link to="login" classNameName="font-semibold mx-2 leading-6 text-indigo-600 hover:text-indigo-500">yes Login</Link> */}
           </p>
         </div>

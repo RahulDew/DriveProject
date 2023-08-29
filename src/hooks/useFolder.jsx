@@ -25,8 +25,8 @@ const reducer = (state, { type, payload }) => {
       return {
         folderId: payload.folderId,
         folder: payload.folder,
-        childFolders: [],
-        childFiles: [],
+        childFolders: null,
+        childFiles: null,
       };
     case ACTION.UPDATE_FOLDER:
       return {
@@ -52,8 +52,8 @@ export const useFolder = (folderId = null, folder = null) => {
   const [state, dispatch] = useReducer(reducer, {
     folderId,
     folder,
-    childFolders: [],
-    childFiles: [],
+    childFolders: null,
+    childFiles: null,
   });
 
   const { currentUser } = useAuthContext();

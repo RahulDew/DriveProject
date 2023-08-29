@@ -8,6 +8,7 @@ import { useAuthContext } from "../context/AuthContext";
 import downloadFile from "../utils";
 // import { vHiOutlineDotsVertical } from "react-icons/hi";
 import { BiDotsVerticalRounded } from "react-icons/bi";
+import { Image } from "react-bootstrap";
 
 import {
   FcImageFile,
@@ -87,27 +88,26 @@ const File = ({ file }) => {
     console.log("ho gye file delete storage se...");
   };
 
-  
-
   return (
     <div className=" flex gap-2 flex-col text-center justify-center text-base p-2 rounded-md bg-slate-800 hover:bg-slate-700 duration-200 cursor-pointer ">
       <a
         href={file.url}
         target={"_blank"}
-        className=" flex justify-center items-center m-auto  w-28 h-36 sm:h-32 sm:w-52"
+        className=" flex justify-center items-center m-auto  w-28 h-36 sm:h-52 sm:w-52"
       >
         {["jpg", "png", "jpeg", "svg", "webp"].includes(
           file.name.split(".").pop()
         ) ? (
-          // <div className=" ">
-            <img
-              src={file.url}
-              alt={file.name}
-              className="object-cover h-full w-full rounded-sm"
-              loading="lazy"
-            />
-          // </div>
+          <img
+            src={file.url}
+            alt={file.name}
+            className=" object-contain h-full w-full rounded-sm img-responsive"
+            loading="lazy"
+
+            // sizes="fill"
+          />
         ) : (
+          // <Image src={file.url} fluid className="object-cover h-full w-full rounded-sm"/>
           iconDictionary.map((item, index) => {
             if (file.name.split(".").pop() === item.type) {
               return (

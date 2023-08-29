@@ -8,13 +8,13 @@ import {
   signOut,
   signInWithPopup,
   GoogleAuthProvider,
+  onAuthStateChanged,
 } from "firebase/auth";
 
-const AuthContext = createContext();
-export const useAuthContext = () => useContext(AuthContext);
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState("");
+  const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
 
   const signUp = async (email, password) => {
@@ -38,30 +38,35 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user);
-      // console.log("user set kr diya bhai");
-      if (user) console.log(user.email);
-
-      setLoading(false);
+    const unSubscribe = onAuthStateChanged(auth, (currentuser) => {
+      // console.log(currentuser.email);
+      setCurrentUser(currentuser);
+      // if (currentuser) {
+        setLoading(false);
+      // }
     });
 
-    return unsubscribe;
+    return () => {
+      unSubscribe();
+    };
   }, []);
 
+  const values = {
+    currentUser,
+    signUp,
+    logIn,
+    logOut,
+    resetPassword,
+    updatePassword,
+    signInWithGoogle,
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        currentUser,
-        signUp,
-        logIn,
-        logOut,
-        resetPassword,
-        updatePassword,
-        signInWithGoogle,
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={values}>
+      {/* childrens will only get values when loading is false */}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuthContext = () => useContext(AuthContext);

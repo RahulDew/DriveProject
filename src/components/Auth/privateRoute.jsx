@@ -1,28 +1,24 @@
 import React, { Component } from "react";
 import { Route, useNavigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
+import { auth } from "../../config/firebase";
 
+// import { useAuthContext } from "../../context/AuthContext";
 import { useAuthContext } from "../../context/AuthContext";
+// import { AuthContext } from "../../context/AuthContext";
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
+const PrivateRoutes = () => {
+  const Location = useLocation();
   const { currentUser } = useAuthContext();
-  const Navigate = useNavigate();
+  // console.log("from private Route: ", currentUser);
 
-  return (
-    <Route
-      {...rest}
-      render={(props) => {
-        return currentUser ? (
-          <Component {...props} />
-        ) : (
-          <Redirect to="/login" />
-        );
-      }}
-    />
+  // console.log("ye component chal rha h ");
+  // const currentUser = true;
+  return currentUser ? (
+    <Outlet />
+  ) : (
+    <Navigate to={"/start"} state={{ from: Location }} replace />
   );
 };
-// return (
-//   <Route {...rest} render={
-//     props => <Component {...rest} {...props} />
-//   } />
-// )
-export default PrivateRoute;
+
+export default PrivateRoutes;
