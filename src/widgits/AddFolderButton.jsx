@@ -3,6 +3,7 @@ import { database, operation } from "../config/firebase";
 import { addDoc } from "firebase/firestore";
 import { useAuthContext } from "../context/AuthContext";
 import { ROOT_FOLDER } from "../hooks/useFolder";
+import { motion } from "framer-motion";
 
 const AddFolderButton = ({ icon, currentFolder }) => {
   const [modelOpen, setModelOpen] = useState(false);
@@ -66,7 +67,11 @@ const AddFolderButton = ({ icon, currentFolder }) => {
         <div className="fixed inset-0 z-10 overflow-y-auto ">
           <div className="fixed inset-0 bg-gray-800 opacity-70 transition-opacity"></div>
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+            >
               <form
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-3 text-black px-4 pb-4 pt-5 sm:p-6 sm:pb-4"
@@ -116,7 +121,7 @@ const AddFolderButton = ({ icon, currentFolder }) => {
                   </div>
                 )}
               </form>
-            </div>
+            </motion.div>
           </div>
         </div>
       )}

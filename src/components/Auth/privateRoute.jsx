@@ -1,24 +1,38 @@
-import React, { Component } from "react";
-import { Route, useNavigate } from "react-router-dom";
+import React from "react";
 import { Outlet, Navigate, useLocation } from "react-router-dom";
-import { auth } from "../../config/firebase";
 
-// import { useAuthContext } from "../../context/AuthContext";
 import { useAuthContext } from "../../context/AuthContext";
-// import { AuthContext } from "../../context/AuthContext";
+import VerifyEmail from "../../Pages/VerifyEmail";
+import UpdateProfile from "../UpdateProfile";
 
 const PrivateRoutes = () => {
   const Location = useLocation();
   const { currentUser } = useAuthContext();
-  // console.log("from private Route: ", currentUser);
 
-  // console.log("ye component chal rha h ");
-  // const currentUser = true;
   return currentUser ? (
-    <Outlet />
+    currentUser.emailVerified && currentUser.displayName ? (
+      <Outlet />
+    ) : (
+      <VerifyEmail />
+    )
   ) : (
+    // <Outlet />
     <Navigate to={"/start"} state={{ from: Location }} replace />
   );
 };
 
 export default PrivateRoutes;
+
+// // backupcode
+// return currentUser ? (
+//   currentUser.emailVerified && currentUser.displayName ? (
+//     <Outlet />
+//   ) : currentUser.displayName && !currentUser.emailVerified ? (
+//     <VerifyEmail />
+//   ) : (
+//     <UpdateProfile />
+//   )
+//   // <Outlet />
+// ) : (
+//   <Navigate to={"/start"} state={{ from: Location }} replace />
+// );

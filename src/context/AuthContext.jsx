@@ -1,6 +1,7 @@
 import React, { Children, createContext, useEffect, useState } from "react";
 import { useContext } from "react";
 import { auth, googleProvider } from "../config/firebase";
+import { sendEmailVerification, updateProfile } from "firebase/auth";
 import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -15,18 +16,36 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState();
+  const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [uploadingFiles, setUploadingFiles] = useState([]);
+  const [allFiles, setAllFiles] = useState([]);
 
   const signUp = async (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+    const { user } = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    //here we have to updateprofile and verify email of user when he/she sign Up
+    // await updateProfile(auth.currentUser, {
+    //   displayName: email.split("@")[0],
+    // });
+
+    // await sendEmailVerification(auth.currentUser);
+
+    return user;
   };
+
   const signInWithGoogle = async () => {
     // const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, googleProvider);
   };
+
   const logIn = (email, password) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
+
   const logOut = () => {
     return signOut(auth);
   };
@@ -41,9 +60,7 @@ export const AuthProvider = ({ children }) => {
     const unSubscribe = onAuthStateChanged(auth, (currentuser) => {
       // console.log(currentuser.email);
       setCurrentUser(currentuser);
-      // if (currentuser) {
-        setLoading(false);
-      // }
+      setLoading(false);
     });
 
     return () => {
@@ -59,6 +76,10 @@ export const AuthProvider = ({ children }) => {
     resetPassword,
     updatePassword,
     signInWithGoogle,
+    uploadingFiles,
+    setUploadingFiles,
+    allFiles,
+    setAllFiles,
   };
 
   return (

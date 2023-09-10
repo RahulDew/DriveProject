@@ -34,7 +34,7 @@ const Folder = ({ folder }) => {
   };
 
   return (
-    <div className="w-52 flex flex-col gap-1 justify-center items-center text-base p-2 rounded-md bg-slate-800 hover:bg-slate-700  duration-200 cursor-pointer ">
+    <div className="card_box_shadow w-52 flex flex-col gap-1 justify-center items-center text-base p-2 rounded-md bg-slate-400 bg-opacity-30 hover:bg-opacity-40 duration-200 cursor-pointer ">
       <Link to={folder.id ? `/folder/${folder.id}` : "/"}>
         <FcFolder className="text-8xl opacity-70" />
       </Link>
@@ -42,7 +42,7 @@ const Folder = ({ folder }) => {
         <div className="truncate">{folder.name}</div>
         <div
           onClick={() => handleDeleteFolder(folder.id)}
-          className="text-xl p-1 bg-slate-700 hover:bg-slate-500 duration-300 rounded-full"
+          className="text-xl p-1 bg-white hover:bg-blue-600 hover:text-white duration-300 shadow-md  rounded-md"
         >
           <MdDelete />
         </div>

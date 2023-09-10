@@ -8,7 +8,7 @@ const FolderBreadCrumb = ({ currentFolder }) => {
   if (currentFolder) path = [...path, ...currentFolder.path];
   //   console.log("bhsi:", path);
   return (
-    <div className="text-lg flex gap-2 items-center text-slate-100 bg-slate-700 hover:bg-slate-600  w-full h-10  p-2 font-semibold rounded-lg">
+    <div className="text-lg flex gap-2 items-center bg-slate-400 bg-opacity-30 hover:bg-opacity-40 duration-200  w-full h-10  p-2 font-semibold rounded-lg">
       <FcHome className="text-2xl" />
       {path.map((folder, index) => (
         <Link
@@ -23,7 +23,7 @@ const FolderBreadCrumb = ({ currentFolder }) => {
         </Link>
       ))}
       {currentFolder && (
-        <div className="truncate text-slate-400 select-none">{currentFolder.name}</div>
+        <div className="truncate text-blue-600 select-none">{currentFolder.name}</div>
       )}
     </div>
   );

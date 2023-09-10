@@ -1,43 +1,32 @@
 import React, { useState } from "react";
-// import { ReactDOM } from "react";
-import ReactDOM from "react-dom/client";
 import { ROOT_FOLDER } from "../hooks/useFolder";
 import { storage, database, formatter } from "../config/firebase";
-import { addDoc, setDoc, updateDoc } from "firebase/firestore";
-import {
-  getDoc,
-  getDocs,
-  doc,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-} from "firebase/firestore";
-import { db } from "../config/firebase";
-import {
-  ref,
-  getDownloadURL,
-  uploadBytesResumable,
-  uploadBytes,
-} from "firebase/storage";
+import { addDoc, updateDoc } from "firebase/firestore";
+import { getDocs, doc, query, where } from "firebase/firestore";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { v4 as uuidV4 } from "uuid";
 import { useAuthContext } from "../context/AuthContext";
-import { GiCancel } from "react-icons/gi";
-// import { Toast, ProgressBar } from "bootstrap";
-import { Toast, ProgressBar, ToastHeader } from "react-bootstrap";
+import { motion } from "framer-motion";
+
+import FileDropZone from "./FileDropZone";
+import Loader from "../components/Loader";
 
 const AddFileButton = ({ icon, currentFolder }) => {
-  const [uploadingFiles, setUploadingFiles] = useState([]);
-  const [fileUploadProgress, setfileUploadProgress] = useState(0);
+  const [modelOpen, setModelOpen] = useState(false);
+  const [fileData, setFileData] = useState(null);
 
-  const { currentUser } = useAuthContext();
+  const { currentUser, setUploadingFiles, uploadingFiles } = useAuthContext();
   const id = uuidV4();
 
-  const handleUploadFile = async (e) => {
-    const file = e.target.files[0];
+  const handleUploadFile = async () => {
+    //copy fileData state to file variable
+    let file = fileData;
     // console.log(file);
+
+    //clearing the fileData State
+    setFileData(null);
+
     if (currentFolder == null || file == null) return;
-    console.log(currentFolder);
 
     setUploadingFiles((prevUploadingFiles) => [
       ...prevUploadingFiles,
@@ -51,12 +40,6 @@ const AddFileButton = ({ icon, currentFolder }) => {
             currentFolder.name
           }/${file.name}`;
 
-    // console.log(currentFolder);
-    // console.log(currentFolder.path);
-    // console.log(filePath);
-    // console.log(file);
-    // console.log(file.name);
-
     const filesFolderRef = ref(
       storage,
       `/files/${currentUser.uid}/${filePath}`
@@ -65,15 +48,12 @@ const AddFileButton = ({ icon, currentFolder }) => {
 
     const uploadTask = uploadBytesResumable(filesFolderRef, file);
     console.log("reply from server: ", uploadTask);
-    // const uploadTask = await uploadBytes(filesFolderRef, file);
-    // console.log("reply from server: ", uploadTask);
 
     uploadTask.on(
       "state_changed",
       (snapshot) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        // console.log("Uploading: ", Math.round(progress));
         setUploadingFiles((prevUploadingFiles) => {
           return prevUploadingFiles.map((uploadFile) => {
             if (uploadFile.id === id) {
@@ -125,116 +105,73 @@ const AddFileButton = ({ icon, currentFolder }) => {
             folderId: currentFolder.id,
             path: filePath,
             userId: currentUser.uid,
+            type: file.type,
+            size: file.size,
             createdAt: database.currentTimeStamp,
           });
         }
 
-        // onSnapshot(q, async (snapshot) => {
-        //   // console.log(snapshot.docs);
-        //   const oldFile = snapshot.docs.map(formatter.formatDoc)[0];
-
-        //   // console.log("oldFile: ", oldFile);
-        //   if (oldFile) {
-        //     const oldFileRef = doc(database.files, oldFile.id);
-        //     console.log("oldfile h bhai: ", oldFile);
-        //     console.log("updating the old file...");
-        //     // alert("file is already available!");
-        //     await updateDoc(oldFileRef, { url: fileURL });
-        //   } else {
-        //     console.log("ab new file create kr rha hu bhai!");
-        //     const fileDocRef = await addDoc(database.files, {
-        //       url: fileURL,
-        //       name: file.name,
-        //       folderId: currentFolder.id,
-        //       path: filePath,
-        //       userId: currentUser.uid,
-        //       createdAt: database.currentTimeStamp,
-        //     });
-        //   }
-        // });
-
-        //creating file document in database
-        // console.log(fileDocRef);
-
         // rermoving the use of file uploading status whenever that file uploaded
         setUploadingFiles((prevUploadingFiles) => {
-          setfileUploadProgress(0);
+          // setfileUploadProgress(0);
           return prevUploadingFiles.filter((uploadFile) => {
             return uploadFile.id !== id;
           });
         });
       }
     );
+
+    setModelOpen(false);
   };
 
   return (
     <>
-      {uploadingFiles.length > 0 && (
-        <div
-          // style={{
-          //   position: "absolute",
-          //   bottom: "1rem",
-          //   right: "1rem",
-          //   maxWidth: "250px",
-          // }}
-          className="fixed z-20 bottom-5 right-5 w-52 sm:w-64"
-        >
-          {uploadingFiles.map((file, index) => (
-            <Toast key={file.id} className="bg-slate-700">
-              <Toast.Header
-                closeButton={false}
-                className="flex flex-row gap-1 justify-center items-center w-100 d-block text-slate-100  bg-slate-600"
-              >
-                <div className="text-truncate">
-                  {index + 1}. {file.name}
-                </div>
-
-                {/* close button of Toast */}
-                {file.error && (
-                  <button
-                    onClick={() => {
-                      setUploadingFiles((prevUploadingFiles) => {
-                        return prevUploadingFiles.filter((uploadFile) => {
-                          return uploadFile.id !== file.id;
-                        });
-                      });
-                    }}
-                  >
-                    <GiCancel />
-                  </button>
-                )}
-              </Toast.Header>
-              <Toast.Body>
-                <ProgressBar
-                  animated={!file.error}
-                  variant={file.error ? "danger" : "primary"}
-                  now={file.error ? 100 : file.progress}
-                  label={file.error ? "Error" : `${Math.round(file.progress)}%`}
-                  className="bg-slate-300"
-                />
-                <div className="text-center my-2">Uploading... </div>
-              </Toast.Body>
-            </Toast>
-          ))}
-          {/* <div>
-            {uploadingFiles.length}
-            {uploadingFiles.map((file, index) => (
-              <div key={index}>{file.progress}</div>
-            ))}
-          </div> */}
-          {/* <div>fileUploadProgress: {fileUploadProgress}</div> */}
-        </div>
-      )}
-
-      <div className="flex gap-2 text-center justify-left items-cener text-2xl font-semibold  text-white bg-slate-700 hover:bg-slate-600 p-2 rounded-md m-auto cursor-pointer">
+      <div
+        onClick={() => setModelOpen(true)}
+        className="flex gap-2 text-center justify-left items-cener text-2xl font-semibold  text-white bg-slate-700 hover:bg-slate-600 p-2 rounded-md m-auto cursor-pointer"
+      >
         {icon}
         <div className="text-base b-2">File</div>
-        <input
-          type="file"
-          onChange={handleUploadFile}
-          style={{ opacity: 0, position: "absolute", width: "60px" }}
-        />
       </div>
+
+      {/* Add file Model */}
+
+      {modelOpen && (
+        <div className="fixed inset-0 z-10 overflow-y-auto ">
+          <div
+            onClick={() => setModelOpen(false)}
+            className="fixed inset-0 bg-gray-800 opacity-70 transition-opacity"
+          ></div>
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+            >
+              {/* main content */}
+              <div className="flex flex-col justify-center items-center gap-3 text-black px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                <h3 className="font-semibold text-xl">Upload your file</h3>
+                {/* <div className=""> */}
+                <FileDropZone
+                  file={fileData}
+                  setFile={setFileData}
+                  fileType={"any"}
+                  styles={"w-80 p-10"}
+                />
+                <button
+                  type="submit"
+                  onClick={handleUploadFile}
+                  className={`${
+                    fileData ? "cursor-pointer" : "cursor-not-allowed"
+                  } w-32 my-2 rounded-md bg-blue-600  hover:bg-blue-700 p-3 text-[17px] font-semibold leading-6 text-white shadow-md duration-300`}
+                >
+                  Upload
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

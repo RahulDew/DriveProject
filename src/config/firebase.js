@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 // import firebase from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, updateProfile } from "firebase/auth";
 import { Firestore, getFirestore, serverTimestamp } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { collection, addDoc, getDoc, doc } from "firebase/firestore";
@@ -27,6 +27,7 @@ export const storage = getStorage(app);
 export const database = {
   folders: collection(db, "folders"),
   files: collection(db, "files"),
+  users: collection(db, "users"),
   currentTimeStamp: serverTimestamp(),
 };
 export const formatter = {
@@ -59,4 +60,3 @@ export const operation = {
 //   folders: db.collection("folders"),
 //   files: db.collection("files"),
 // };
-
