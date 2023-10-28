@@ -56,6 +56,9 @@ export const useFolder = (folderId = null, folder = null) => {
     childFiles: null,
   });
 
+  // console.log("Folder: ", folder);
+  // console.log("FolderId: ", folderId);
+
   const { currentUser } = useAuthContext();
 
   useEffect(() => {

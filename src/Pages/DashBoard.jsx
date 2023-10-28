@@ -74,7 +74,7 @@ const DashBoard = () => {
       )}
 
       {/* line break */}
-      <hr className="font-bold border-slate-300 dark:border-slate-700 my-4" />
+      <hr className="font-bold border-slate-300 dark:border-slate-700 my-4 duration-200" />
 
       <div className="mb-4 pb-2 px-2 sm:px-5 text-xl rounded-xl font-semibold  text-slate-700 dark:text-slate-300 left-0 text-left">
         Files of {folder && folder.name} :

@@ -18,16 +18,10 @@ const links = [
   { url: "/profile", text: "Profile", icon: <FaRegUser /> },
 ];
 
-const SideNav = ({ handleLogout, currentUser }) => {
+const SideNav = ({ handleLogout, currentUser, logoutWarning, setLogoutWarning, handleLogoutWarning }) => {
   // const { currentUser } = useAuthContext();
   const params = useParams();
-  const [logoutWarning, setLogoutWarning] = useState(null);
-
-  const handleLogoutWarning = () => {
-    setLogoutWarning({
-      type: "logout",
-    });
-  };
+  
 
   return (
     <>

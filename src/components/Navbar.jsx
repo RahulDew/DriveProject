@@ -5,12 +5,12 @@ import { FiUploadCloud, FiMoon, FiSun } from "react-icons/fi";
 
 import SideNav from "./SideNav";
 import UploadingFileCard from "../widgits/UploadingFileCard";
-import Toast from "../widgits/Toast";
 import { motion } from "framer-motion";
 
 const Navbar = () => {
   const [showUploadings, setShowUploadings] = useState(false);
   const [toggleDropdown, setToggleDropdown] = useState(false);
+  const [logoutWarning, setLogoutWarning] = useState(null);
 
   const Navigate = useNavigate();
 
@@ -33,9 +33,21 @@ const Navbar = () => {
     }
   };
 
+  const handleLogoutWarning = () => {
+    setLogoutWarning({
+      type: "logout",
+    });
+  };
+
   return (
     <nav className="flex items-center justify-between " aria-label="Global">
-      <SideNav handleLogout={handleLogout} currentUser={currentUser} />
+      <SideNav
+        handleLogout={handleLogout}
+        currentUser={currentUser}
+        logoutWarning={logoutWarning}
+        setLogoutWarning={setLogoutWarning}
+        handleLogoutWarning={handleLogoutWarning}
+      />
       <div className="flex">
         <Link to={"/"} className="flex gap-3 p-1.5 pb-3">
           <span className="font-bold text-3xl">Stasher</span>
@@ -92,7 +104,7 @@ const Navbar = () => {
       <div className="flex sm:hidden relative gap-3">
         {/* uploading files button */}
         <div
-          className="flex gap-2 w-10 h-10 items-center cursor-pointer text-xl bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-50 dark:hover:bg-blue-600 p-2.5 rounded-xl shadow-md"
+          className="flex gap-2 items-center cursor-pointer text-xl bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-50 dark:hover:bg-slate-800 p-2.5 rounded-xl shadow-md duration-200"
           onClick={() => setShowUploadings(true)}
         >
           <FiUploadCloud />
@@ -100,15 +112,16 @@ const Navbar = () => {
             <motion.p
               layout
               // animate={{}}
-              transition={{ duration: 0.3 }}
-              className="bg-blue-600 curso w-6 h-6 rounded-full text-white text-base font-semibold"
+              // transition={{ duration: 0.3 }}
+              className="text-slate-900 dark:text-blue-600 pb-0.5 text-sm font-semibold duration-200"
             >
-              {uploadingFiles.length}
+              {uploadingFiles.length} 
             </motion.p>
           ) : (
             <></>
           )}
         </div>
+        {/* currentuser profile image */}
         <div
           onClick={() => setToggleDropdown((prev) => !prev)}
           className="m-auto w-10 h-10 flex items-center justify-center cursor-pointer bg-orange-500 rounded-xl shadow-md"
@@ -167,7 +180,7 @@ const Navbar = () => {
               className="mt-2 font-bold bg-red-500 text-slate-50 text-base p-3 rounded-full w-full"
               onClick={() => {
                 setToggleDropdown(false);
-                handleLogout();
+                handleLogoutWarning();
               }}
             >
               Log Out

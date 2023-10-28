@@ -47,19 +47,19 @@ const Toast = ({ toast, removeToast }) => {
       layout
       initial={{ scale: 0, opacity: 0.2 }}
       animate={{ scale: 1, opacity: 1 }}
-      class="z-10 w-64 md:w-72 lg:w-96 flex items-center p-2 text-slate-500 bg-white rounded-xl shadow-lg dark:text-gray-400 dark:bg-slate-900 "
+      className="z-10 w-64 md:w-72 lg:w-96 flex items-center p-2 text-slate-500 bg-white rounded-xl shadow-lg dark:text-gray-400 dark:bg-slate-900 "
     >
       <div
-        class={`text-xl inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-${toastIconColor}-500 bg-${toastIconColor}-100 rounded-lg dark:text-${toastIconColor}-300  dark:bg-${toastIconColor}-900 dark:bg-opacity-50`}
+        className={`text-xl inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-${toastIconColor}-500 bg-${toastIconColor}-100 rounded-lg dark:text-${toastIconColor}-300  dark:bg-${toastIconColor}-900 dark:bg-opacity-50`}
       >
         {toastIcon}
-        {/* <span class="sr-only">Fire icon</span> */}
+        {/* <span className="sr-only">Fire icon</span> */}
       </div>
-      <div class="ml-3 text-sm font-normal">{toast.message}</div>
+      <div className="ml-3 text-sm font-normal">{toast.message}</div>
       <button
         onClick={() => removeToast(toast.id)}
         type="button"
-        class="ml-auto text-xl text-gray-400 hover:text-slate-700 rounded-lg p-1.5 hover:bg-slate-200 outline-none inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:hover:bg-slate-800"
+        className="ml-auto text-xl text-gray-400 hover:text-slate-700 rounded-lg p-1.5 hover:bg-slate-200 outline-none inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:hover:bg-slate-800"
       >
         <MdClose />
       </button>
