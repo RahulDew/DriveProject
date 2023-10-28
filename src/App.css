@@ -1,3 +1,7 @@
+:root {
+  background-color: #e2efff;
+}
+
 .special_gradient {
   height: fit-content;
   /* z-index: -3; */
@@ -109,6 +113,7 @@
   gap: 10px;
   width: 100%;
   margin: auto;
+  background-color: #c4d5e7;
   /* background-color: var(--color-stroke); */
   /* padding: 1em; */
 }

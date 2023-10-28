@@ -3,120 +3,141 @@ import { useAuthContext } from "../context/AuthContext";
 import { database, formatter } from "../config/firebase";
 import { query, where, onSnapshot } from "firebase/firestore";
 import { getCountFromServer } from "firebase/firestore";
-import Navbar from "../components/Navbar";
-
-import UpdateProfile from "../components/UpdateProfile";
+// import Navbar from "../components/Navbar";
+import { FcFolder, FcFile } from "react-icons/fc";
+import { FaToggleOn } from "react-icons/fa";
+import { MdVerifiedUser } from "react-icons/md";
+import { BsFillShieldSlashFill } from "react-icons/bs";
+import Loader from "../components/Loader";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState([]);
+  const [foldersCountState, setFoldersCountState] = useState(null);
+  const [filesCountState, setFilesCountState] = useState(null);
+  console.log(profile);
 
   const { currentUser } = useAuthContext();
 
-  // // getting total number of files from the server
-  // const totalFoldersCount = async () => {
-  //   const totalFolders = await getCountFromServer(
-  //     query(database.folders, where("userId", "==", currentUser.uid))
-  //   );
-  //   console.log(totalFolders);
-  // };
+  const totalFoldersCount = async () => {
+    const totalFolders = await getCountFromServer(
+      query(database.folders, where("userId", "==", currentUser.uid))
+    );
+    console.log(totalFolders);
+    setFoldersCountState(totalFolders.data());
+  };
+
+  const q = query(database.users, where("userId", "==", currentUser.uid));
+
+  const getProfile = () => {
+    onSnapshot(q, (snapshot) => {
+      const userProfile = snapshot.docs.map(formatter.formatDoc)[0];
+      // console.log(userProfile);
+      setProfile(userProfile);
+    });
+  };
 
   // useEffect(() => {
-  //   const q = query(database.users, where("userId", "==", currentUser.uid));
-
-  //   onSnapshot(q, (snapshot) => {
-  //     const userProfile = snapshot.docs.map(formatter.formatDoc)[0];
-  //     // console.log(userProfile);
-  //     setProfile(userProfile);
-  //   });
+  //   // getting total number of files from the server
+  //   totalFoldersCount();
+  //   getProfile();
   // }, []);
 
   return (
     <>
-      <div className=" ml-20 text-center bg-[#E2EFFF] min-h-screen p-6 lg:px-8">
-        <Navbar />
-        <div className="w-full h-full">
-          <div className="max-w-5xl py-3 grid-container " id="container">
-            {/* <div className="box span-row bg-slate-500 rounded-2xl"> */}
-            {currentUser.photoURL ? (
+      {/* {Array.isArray(profile) && profile && ( */}
+      <div className="m-auto mt-10 w-5/6 h-[65vh] flex flex-col justify-between items-center gap-5">
+        {/* <h2 className=" text-5xl font-semibold">Dude, {currentUser?.displayName}</h2> */}
+        {/* top details */}
+        <div className=" w-[50rem] h-[10rem] lg:w-[60rem] lg:h-[15rem] bg-black flex flex-col md:flex-row items-center gap-2">
+          {/* user image */}
+          <div className="w-[18rem] lg:w-[20rem] h-full rounded-3xl p-2">
+            {currentUser?.photoURL ? (
               <img
                 src={currentUser.photoURL}
                 alt=""
-                className="span-row rounded-2xl"
+                className="h-full w-full object-cover rounded-3xl shadow-xl"
               />
             ) : (
-              <div className="span-row rounded-2xl text-7xl font-semibold bg-gradient-to-r from-cyan-900 to-blue-900">
+              <div className="bg-gradient-to-br from-red-500 to-blue-600 shadow-xl h-full w-full flex justify-center items-center rounded-3xl text-7xl font-semibold">
                 {currentUser.displayName[0].toUpperCase()}
               </div>
             )}
-
-            {/* </div> */}
-            <div className="span-row rounded-2xl">
-              {/* top right grids */}
-              <div className="max-w-5xl h-full bottom-grid-container">
-                <div className="box span-col text-5xl font-bold bg-slate-400 rounded-2xl">
-                  Dude, RahulDew
-                </div>
-                <div className="box bg-slate-300 rounded-2xl">Item four</div>
-                <div className="box bg-slate-300 rounded-2xl">Item five</div>
-                <div className="box bg-slate-300 rounded-2xl">Item four</div>
-                <div className="box bg-slate-300 rounded-2xl">Item five</div>
+          </div>
+          {/* specific details */}
+          <div className="w-[40rem] h-full flex flex-wrap justify-center items-center gap-2 p-2">
+            {/* folders count */}
+            <div className="w-[15rem] h-[3rem] bg-slate-50 shadow-xl rounded-2xl m-auto flex justify-evenly items-center p-10 gap-5">
+              <FcFolder className="text-6xl" />
+              <div>
+                <span className="font-bold text-3xl text-blue-600">
+                  {foldersCountState?.count} 09
+                </span>
+                <p className="text-xl font-semibold">Folders</p>
+              </div>
+            </div>
+            {/* files count */}
+            <div className="w-[15rem] h-[3rem] bg-slate-50 shadow-xl rounded-2xl m-auto flex justify-evenly items-center p-10 gap-5">
+              <FcFile className="text-6xl" />
+              <div>
+                <span className="font-bold text-3xl text-blue-600">129</span>
+                <p className="text-xl font-semibold">Files</p>
+              </div>
+            </div>
+            {/* email varified check */}
+            <div className="w-[15rem] h-[3rem] bg-slate-50 shadow-xl rounded-2xl m-auto flex justify-evenly items-center p-10 gap-5">
+              {currentUser.emailVerified ? (
+                <MdVerifiedUser className="text-6xl text-emerald-500" />
+              ) : (
+                <BsFillShieldSlashFill className="text-6xl text-emerald-500" />
+              )}
+              <div>
+                <p className="text-xl font-semibold">Varified</p>
+                <p className="text-xl font-semibold">Email</p>
+              </div>
+            </div>
+            {/* dark mode check */}
+            <div className="w-[15rem] h-[3rem] bg-slate-50 shadow-xl rounded-2xl m-auto flex justify-evenly items-center p-10 gap-5">
+              <FaToggleOn className="text-6xl text-blue-600" />
+              <div>
+                <p className="text-xl font-semibold">Dark</p>
+                <p className="text-xl font-semibold">Mode</p>
               </div>
             </div>
           </div>
-          {/* Bottom Grids */}
-          <div className="max-w-5xl bottom-grid-container" id="container">
-            <article className="bg-slate-400 w-full h-full rounded-2xl relative">
-              <div className="left-0 bottom-0  flex flex-col justify-center items-center">
-                <h4>Full Name:</h4>
-                <p>Rahul Kumar</p>
-              </div>
-            </article>
-            <article className="box bg-slate-400 rounded-2xl">
-              Item five
-            </article>
-            <article className="box bg-slate-400 rounded-2xl">
-              Item four
-            </article>
-            <article className="box bg-slate-400 rounded-2xl">
-              Item five
-            </article>
+        </div>
+        {/* bottom details */}
+        <div className="w-[60rem] h-[18rem] rounded-xl flex flex-col md:flex-wrap justify-center items-center gap-2">
+          {/* full name details */}
+          <div className="w-[29rem] h-[6.5rem] bg-slate-50 shadow-xl rounded-2xl m-auto flex flex-col justify-center items-start p-10">
+            <span className="font-bold text-xl ">Full name:</span>
+            <p className="text-xl font-semibold text-blue-600">
+              {profile.fullName}
+            </p>
+          </div>
+          {/* DOB details */}
+          <div className="w-[29rem] h-[6.5rem] bg-slate-50 shadow-xl rounded-2xl m-auto flex flex-col justify-center items-start p-10">
+            <span className="font-bold text-xl ">Date of birth:</span>
+            <p className="text-xl font-semibold text-blue-600">{profile.DOB}</p>
+          </div>
+          {/* email details */}
+          <div className="w-[29rem] h-[6.5rem] bg-slate-50 shadow-xl rounded-2xl m-auto flex flex-col justify-center items-start p-10">
+            <span className="font-bold text-xl ">Email:</span>
+            <p className="text-xl font-semibold text-blue-600">
+              {profile.email}
+            </p>
+          </div>
+          {/* update profile option */}
+          <div className="w-[29rem] h-[6.5rem] bg-slate-50 shadow-xl rounded-2xl m-auto flex  justify-start items-center p-10">
+            <span className="font-bold text-base text-slate-600 ">Want to update profile:</span>
+            <Link to={"/updateProfile"} className="w-32 ml-5 text-[17px] rounded-xl font-semibold text-white bg-blue-600 p-2 cursor-pointer hover:bg-blue-700 duration-300">
+              Update
+            </Link>
           </div>
         </div>
-        {/* <UpdateProfile currentUser={currentUser} /> */}
       </div>
     </>
   );
 };
 
 export default Profile;
-
-{
-  /* <h1 classNameName="text-2xl ">Profile</h1>
-        <div>
-          {currentUser.photoURL ? (
-            <img src={currentUser.photoURL} className="w-32 h-32" />
-          ) : (
-            <div className="w-24 h-24 flex justify-center items-center rounded-full p-3 bg-slate-800 text-white">
-              <div className="text-3xl font-semibold">
-                {currentUser.displayName[0]}
-              </div>
-            </div>
-          )}
-        </div>
-        <p>Email: {currentUser.email}</p>
-        <p>Email: {currentUser.displayName}</p>
-        <p>reloadUserInfoScreenName: {currentUser.reloadUserInfo.screenName}</p>
-        <p>reloadUserInfoScreenName: {currentUser.photoURL}</p>
-        <p>emailVerified: {currentUser.emailVerified ? "True" : "False"}</p>
-        <p>isAnonymous: {currentUser.isAnonymous ? "True" : "False"}</p>
-        <p>
-          phoneNumber:{" "}
-          {currentUser.phoneNumber ? currentUser.phoneNumber : "Null"}
-        </p>
-
-        <p>userId: {currentUser.uid}</p>
-
-        <hr className=" border w-4/5 border-blue-600 my-5" />
-
-        form handling */
-}

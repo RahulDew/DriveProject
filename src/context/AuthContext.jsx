@@ -16,10 +16,20 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState();
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
   const [loading, setLoading] = useState(true);
   const [uploadingFiles, setUploadingFiles] = useState([]);
   const [allFiles, setAllFiles] = useState([]);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [contentLoading, setContentLoading] = useState(false);
+
+  // for toast notification
+  const [toasts, setToasts] = useState([]);
+  const [autoCloseDuration, setAutoCloseDuration] = useState(5);
+  // const [autoClose, setAutoClose] = useState(true);
 
   const signUp = async (email, password) => {
     const { user } = await createUserWithEmailAndPassword(
@@ -27,12 +37,9 @@ export const AuthProvider = ({ children }) => {
       email,
       password
     );
-    //here we have to updateprofile and verify email of user when he/she sign Up
     // await updateProfile(auth.currentUser, {
     //   displayName: email.split("@")[0],
     // });
-
-    // await sendEmailVerification(auth.currentUser);
 
     return user;
   };
@@ -54,6 +61,36 @@ export const AuthProvider = ({ children }) => {
   };
   const updatePassword = (password) => {
     return currentUser.updatePassword(password);
+  };
+
+  const handleToggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const handleShowToast = (message, type) => {
+    const toast = {
+      id: Date.now(),
+      message,
+      type,
+    };
+    // console.log(toast);
+
+    if (toasts.length <= 2) {
+      setToasts((prevToasts) => [...prevToasts, toast]);
+    } else {
+      setToasts([toast]);
+    }
+
+    setTimeout(() => {
+      removeToast(toast.id);
+      // setToasts([]);
+    }, autoCloseDuration * 600);
+  };
+
+  const removeToast = (toastId) => {
+    setToasts((prevToasts) =>
+      prevToasts.filter((toast) => toast.id !== toastId)
+    );
   };
 
   useEffect(() => {
@@ -80,6 +117,18 @@ export const AuthProvider = ({ children }) => {
     setUploadingFiles,
     allFiles,
     setAllFiles,
+    authLoading,
+    setAuthLoading,
+    authError,
+    setAuthError,
+    contentLoading,
+    setContentLoading,
+    darkMode,
+    setDarkMode,
+    handleToggleDarkMode,
+    toasts,
+    handleShowToast,
+    removeToast,
   };
 
   return (

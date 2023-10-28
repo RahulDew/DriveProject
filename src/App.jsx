@@ -17,10 +17,11 @@ import Search from "./Pages/Search";
 import Profile from "./Pages/Profile";
 import UpdateProfile from "./components/UpdateProfile";
 import VerifyEmail from "./Pages/VerifyEmail";
+import Auth from "./components/Auth/Auth";
+import Home from "./Pages/Home";
 
 function App() {
   const { currentUser } = useAuthContext();
-  // console.log(currentUser);
 
   // console.log("from App: ", currentUser);
   return (
@@ -29,19 +30,25 @@ function App() {
         <Routes>
           {/* Private or Protected Routes */}
           <Route element={<PrivateRoutes />}>
-            <Route exact path="/" element={<DashBoard />} />
-            <Route exact path="/folder/:folderId" element={<DashBoard />} />
-            <Route path="/recents" element={<Recents />} />
-            <Route exact path="/search" element={<Search />} />
-            <Route exact path="/profile" element={<Profile />} />
-            <Route exact path="/updateProfile" element={<UpdateProfile />} />
+            <Route path="/" element={<Home />}>
+              <Route path="" element={<DashBoard />} />
+              <Route path="folder/:folderId" element={<DashBoard />} />
+              <Route path="search" element={<Search />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="recents" element={<Recents />} />
+            </Route>
+
             <Route exact path="/verifyEmail" element={<VerifyEmail />} />
           </Route>
+
           {/* Unprotected or Public Routes */}
-          <Route exact path="/start" element={<Start />} />
-          <Route exact path="/signup" element={<Signup />} />
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/forgot-password" element={<ForgetPass />} />
+          <Route path="/auth" element={<Auth />}>
+            <Route exact path="updateProfile" element={<UpdateProfile />} />
+            <Route path="start" element={<Start />} />
+            <Route path="signup" element={<Signup />} />
+            <Route path="login" element={<Login />} />
+            <Route path="forgot-password" element={<ForgetPass />} />
+          </Route>
         </Routes>
       </Router>
     </>

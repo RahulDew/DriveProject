@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import { useReducer, useEffect } from "react";
 import {
   getDoc,
   doc,
@@ -17,7 +17,7 @@ const ACTION = {
   SET_CHILD_FILES: "set-child-files",
 };
 
-export const ROOT_FOLDER = { name: "Root", id: null, path: [] };
+export const ROOT_FOLDER = { name: "Home", id: null, path: [] };
 
 const reducer = (state, { type, payload }) => {
   switch (type) {
@@ -88,34 +88,47 @@ export const useFolder = (folderId = null, folder = null) => {
   }, [folderId]);
 
   useEffect(() => {
-    const q = query(
+    const foldersQ = query(
       database.folders,
       where("parentId", "==", folderId),
       where("userId", "==", currentUser.uid),
       orderBy("createdAt")
     );
-    return onSnapshot(q, (snapshot) => {
-      dispatch({
-        type: ACTION.SET_CHILD_FOLDERS,
-        payload: { childFolders: snapshot.docs.map(formatter.formatDoc) },
-      });
-    });
-  }, [folderId, currentUser]);
-
-  useEffect(() => {
-    const q = query(
+    const filesQ = query(
       database.files,
       where("folderId", "==", folderId),
       where("userId", "==", currentUser.uid),
       orderBy("createdAt")
     );
-    return onSnapshot(q, (snapshot) => {
+    onSnapshot(foldersQ, (snapshot) => {
+      dispatch({
+        type: ACTION.SET_CHILD_FOLDERS,
+        payload: { childFolders: snapshot.docs.map(formatter.formatDoc) },
+      });
+    });
+    onSnapshot(filesQ, (snapshot) => {
       dispatch({
         type: ACTION.SET_CHILD_FILES,
         payload: { childFiles: snapshot.docs.map(formatter.formatDoc) },
       });
     });
+    return;
   }, [folderId, currentUser]);
+
+  // useEffect(() => {
+  //   const q = query(
+  //     database.files,
+  //     where("folderId", "==", folderId),
+  //     where("userId", "==", currentUser.uid),
+  //     orderBy("createdAt")
+  //   );
+  //   return onSnapshot(q, (snapshot) => {
+  //     dispatch({
+  //       type: ACTION.SET_CHILD_FILES,
+  //       payload: { childFiles: snapshot.docs.map(formatter.formatDoc) },
+  //     });
+  //   });
+  // }, [folderId, currentUser]);
 
   return state;
 };

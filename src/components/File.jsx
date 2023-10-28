@@ -9,7 +9,6 @@ import { useAuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { MdClose } from "react-icons/md";
 import downloadFile from "../utils";
-// import { vHiOutlineDotsVertical } from "react-icons/hi";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import { getDownloadURL } from "firebase/storage";
 import { getStorage } from "firebase/storage";
@@ -21,62 +20,58 @@ import {
   FcDocument,
   FcClapperboard,
   FcQuestions,
+  FcGallery,
+  FcContacts,
+  FcMusic,
+  FcTemplate,
+  FcRules,
+  FcAnswers,
+  FcFile,
 } from "react-icons/fc";
 import { MdDelete, MdDownload } from "react-icons/md";
-import ReactPlayer from "react-player";
+import { HiOutlineDownload } from "react-icons/hi";
 import { Link } from "react-router-dom";
+
+import VideoPlayer from "../widgits/VideoPlayer";
+import AudioPlayer from "../widgits/AudioPlayer";
+import DocViewer from "../widgits/DocViewer";
 
 const iconDictionary = [
   {
-    type: "jpg",
-    icon: <FcImageFile />,
+    type: "image",
+    icon: <FcGallery />,
     preview: "image",
   },
   {
-    type: "png",
-    icon: <FcImageFile />,
-    preview: "image",
-  },
-  {
-    type: "jpeg",
-    icon: <FcImageFile />,
-    preview: "image",
-  },
-  {
-    type: "webp",
-    icon: <FcImageFile />,
-    preview: "image",
-  },
-  {
-    type: "doc",
-    icon: <FcImageFile />,
-    preview: "document",
-  },
-  {
-    type: "mp4",
+    type: "video",
     icon: <FcClapperboard />,
     preview: "video",
   },
   {
-    type: "mp3",
-    icon: <FcSpeaker />,
+    type: "audio",
+    icon: <FcMusic />,
     preview: "song",
   },
   {
-    type: "pdf",
-    icon: <FcImageFile />,
-    preview: "document",
+    type: "application",
+    icon: <FcDocument />,
+    preview: "docments",
   },
   {
-    type: "mkv",
-    icon: <FcVlc />,
-    preview: "video",
+    type: "text",
+    icon: <FcRules />,
+    preview: "text/html",
+  },
+  {
+    type: "file/data",
+    icon: <FcContacts />,
+    preview: "text/html",
   },
 ];
 
 const File = ({ file, currentFolder }) => {
   const [fileModel, setFileModel] = useState(null);
-  const { currentUser } = useAuthContext();
+  const { currentUser, handleShowToast } = useAuthContext();
 
   //handeling the delete functionality
   const handleDelete = async (fileId, filePath) => {
@@ -92,9 +87,11 @@ const File = ({ file, currentFolder }) => {
     // console.log(storageFileref);
     await deleteObject(storageFileref);
     console.log("ho gye file delete storage se...");
+    handleShowToast("1 file deleted", "failure");
   };
 
-  const handleDownload = async (file) => {
+  const handleDownload = () => {
+    handleShowToast("1 file deleted", "failure");
     // fetch(file.url, { mode: "no-cors" })
     //   .then((response) => response.blob())
     //   .then((blob) => {
@@ -106,7 +103,7 @@ const File = ({ file, currentFolder }) => {
     //     aTag.click();
     //     aTag.remove();
     //   });
-    console.log(file);
+    // console.log(file);
     // const response = await fetch(file.url);
     // const data = await response.blob();
     // console.log(response);
@@ -120,33 +117,37 @@ const File = ({ file, currentFolder }) => {
     //     : `${currentFolder.path.map((item) => item.name).join("/")}/${
     //         currentFolder.name
     //       }/${file.name}`;
-
     // const filesFolderRef = ref(
     //   storage,
     //   `/files/${currentUser.uid}/${filePath}`
     // );
     // console.log(filesFolderRef);
-
     // getDownloadURL(filesFolderRef)
     //   .then((downloadUrl) => console.log(downloadUrl))
     //   .catch((error) => console.log(error));
-
     // // trying with bucket
     // const fileee = getStorage().bucket("my-custom-bucket").file(filesFolderRef);
     // const publicUrl = await getDownloadURL(fileee);
     // console.log(publicUrl);
   };
 
+  let fileIcon = <FcFile />;
+
+  iconDictionary.map((item, index) => {
+    if (file.type.startsWith(item.type)) {
+      return (fileIcon = item.icon);
+    }
+  });
+
   return (
     <>
-      <div className="flex flex-col gap-1 text-base p-2 rounded-lg bg-slate-500 bg-opacity-30 shadow-xl hover:bg-opacity-40 duration-300 cursor-pointer ">
+      <div className="flex flex-col gap-2 text-base p-2 pt-2.5 sm:p-2 sm:pt-3 md:p-4 rounded-xl lg:rounded-2xl bg-slate-50 dark:bg-slate-900 hover:bg-opacity-40 dark:hover:bg-slate-800 dark:shadow-none shadow-2xl hover:shadow-blue-300 cursor-pointer duration-200 ">
+        {/* file preview */}
         <div
           onClick={() => setFileModel(file)}
-          className="m-auto w-56 h-56 flex justify-center items-center"
+          className="m-auto w-32 h-32 sm:w-32 sm:h-36 md:w-40 md:h-40 lg:w-52 lg:h-52 flex justify-center items-center"
         >
-          {["jpg", "png", "jpeg", "svg", "webp"].includes(
-            file.name.split(".").pop()
-          ) ? (
+          {file.type.startsWith("image") ? (
             // <div className="w-48 h-56 flex justify-center items-center">
             <motion.img
               initial={{ opacity: 0 }}
@@ -159,164 +160,164 @@ const File = ({ file, currentFolder }) => {
             />
           ) : (
             // </div>
-            iconDictionary.map((item, index) => {
-              if (file.name.split(".").pop() === item.type) {
-                return (
-                  <div key={index} className="text-8xl m-auto">
-                    {item.icon}
-                  </div>
-                );
-              }
-            })
+            //   iconDictionary.map((item, index) => {
+            //     if (file.type.startsWith(item.type)) {
+            //       return (
+            //         <div
+            //           key={index}
+            //           className="text-6xl md:text-8xl lg:text-9xl flex justify-center items-center"
+            //         >
+            //           {item.icon}
+            //         </div>
+            //       );
+            //     }
+            //   })
+
+            <div className="text-6xl md:text-8xl lg:text-9xl flex justify-center items-center">
+              {fileIcon}
+            </div>
           )}
         </div>
 
-        <div className="flex gap-2 items-center justify-between">
-          <div className="flex justify-start items-center gap-2">
-            {iconDictionary.map((item, index) => {
-              if (file.name.split(".").pop() === item.type) {
+        <div className="flex gap-[2px] sm:gap-0.5 lg:gap-2 items-center justify-between">
+          <div className="flex justify-start items-center gap-1">
+            {/* {iconDictionary.map((item, index) => {
+              if (file.type.startsWith(item.type)) {
                 return (
-                  <div key={index} className="text-xl sm:text-3xl">
+                  <div
+                    key={index}
+                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl"
+                  >
                     {item.icon}
                   </div>
                 );
               }
-            })}
-            <div className="truncate text-xs sm:text-lg">
+            })} */}
+            {/* file icon */}
+            <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
+              {fileIcon}
+            </div>
+            {/* file name */}
+            <div
+              onClick={handleDownload}
+              className="text-xs sm:text-[12px] md:text-[14px] lg:text-base truncate duration-200"
+            >
               {file.name.length > 14
-                ? `${file.name.substring(0, 15)}...`
+                ? `${file.name.substring(0, 14)}...`
                 : file.name.toString()}
             </div>
           </div>
-          <div
-            onClick={() => setFileModel(file)}
-            className=" w-7 p-1 bg-white hover:bg-blue-600 hover:text-white duration-300 shadow-md  rounded-md"
+          <Link
+            to={file.url}
+            onClick={handleDownload}
+            target="_blank"
+            className="p-0 md:p-0.5 lg:p-1 hover:text-blue-600 lg:bg-white lg:hover:bg-blue-600 lg:hover:text-white  lg:dark:bg-slate-700 lg:dark:hover:bg-blue-600 shadow-md rounded-md duration-200"
           >
-            <BiDotsVerticalRounded className="text-xl" />
-          </div>
+            <HiOutlineDownload className="text-xl" />
+          </Link>
         </div>
-
-        {/* <div className=" hidden sm:flex justify-between ">
-          <div
-            onClick={() => handleDelete(file.id, file.path)}
-            className=" w-7 p-1 bg-white hover:bg-blue-600 hover:text-white duration-300 shadow-md  rounded-md"
-          >
-            <MdDelete className="text-xl" />
-          </div>
-          <div
-            onClick={() => handleDownload(file)}
-            className=" w-7 p-1 bg-white  hover:bg-blue-600 hover:text-white duration-300 shadow-md  rounded-md"
-          >
-            <MdDownload className="text-xl" />
-          </div>
-          <div
-            onClick={() => setFileModel(file)}
-            className=" w-7 p-1 bg-white hover:bg-blue-600 hover:text-white duration-300 shadow-md  rounded-md"
-          >
-            <BiDotsVerticalRounded className="text-xl" />
-          </div>
-        </div> */}
       </div>
+
+      {/* File viewer */}
       {fileModel && (
-        <div className="fixed inset-0 z-10 overflow-y-auto ">
+        <div className="fixed inset-0 z-50 overflow-y-auto ">
           <div
             className="fixed inset-0 bg-gray-800 h-screen opacity-70 transition-opacity"
             onClick={() => setFileModel(null)}
           ></div>
-          <div className="min-h-screen flex items-center justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="sm:min-h-screen  flex items-center justify-center sm:p-4 text-center sm:items-center ">
             <motion.div
               // whileHover={{ opacity: 0.8 }}
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl"
+              className="relative w-full h-full sm:rounded-2xl bg-slate-50 dark:bg-slate-900 text-left shadow-xl transition-all my-0 sm:w-full sm:max-w-3xl"
             >
-              <div className="flex flex-col p-5 justify-center items-center text-[17px] ">
+              <div className="w-full flex flex-col p-5 justify-center items-center text-[17px]">
+                {/* <p>{fileModel.name.substring(fileModel.name.lastIndexOf('.') + 1)}</p> */}
                 {/* file Preview */}
-                <div className="w-11/12 h-[30rem] flex justify-center items-center border-2 border-slate-200 rounded-2xl shadow-md">
-                  {fileModel.type.includes("image") && (
+                <div className="w-full md:w-11/12 h-[25rem] sm:h-[30rem] flex justify-center items-center border-2 border-slate-300 dark:border-slate-700 rounded-2xl">
+                  {fileModel.type.startsWith("image/") && (
                     <img
                       src={fileModel.url}
                       alt={fileModel.name}
                       className="object-contain h-full w-full rounded-xl"
                     />
                   )}
-                  {fileModel.type.includes("video") && (
-                    <ReactPlayer
-                      url={fileModel.url}
-                      controls
-                      width={"100%"}
-                      height={"100%"}
-                    />
+                  {fileModel.type.startsWith("video/") && (
+                    <VideoPlayer src={fileModel.url} type={fileModel.type} />
                   )}
-                  {fileModel.type.includes("audio") && (
-                    <ReactPlayer
-                      url={fileModel.url}
-                      controls
-                      width={"100%"}
-                      height={"100%"}
-                    />
+                  {fileModel.type.startsWith("audio/") && (
+                    <AudioPlayer src={fileModel.url} type={fileModel.type} />
                   )}
+                  {fileModel.type.startsWith("application/pdf") && (
+                    <DocViewer src={fileModel.url} type={fileModel.type} />
+                  )}
+                  {fileModel.name.substring(
+                    fileModel.name.lastIndexOf(".") + 1
+                  ) == "exe" && <FcFile className="text-[10rem]" />}
                 </div>
-                <div className="w-full flex gap-2 mt-3 px-8 justify-between">
+                {/* file info and options */}
+                <div className="w-full flex gap-2 mt-7 md:px-8 justify-between flex-col-reverse sm:flex-row">
                   {/* file details */}
                   <div className=" flex flex-col">
-                    <article className="flex gap-3 justify-start items-center p-1 ">
-                      <span className="w-32 font-bold  text-slate-500">
+                    {/* file name */}
+                    <article className="flex gap-3 justify-start flex-col sm:flex-row p-1 border border-slate-900 rounded-lg my-1">
+                      <span className="w-full sm:w-32 font-bold text-left text-slate-500 dark:text-slate-300">
                         File Name:
                       </span>
-                      <p className="w-96 font-semibold text-slate-700 truncate ">
+                      <p className="w-full font-semibold text-slate-700 dark:text-slate-100 ">
                         {fileModel.name}
                       </p>
                     </article>
                     {/* file createdAt */}
-                    <article className="flex gap-3 justify-start items-center p-1 ">
-                      <span className="w-32 font-bold  text-slate-500">
+                    <article className="flex gap-3 justify-start items-center flex-col sm:flex-row p-1 border border-slate-900 rounded-lg my-1">
+                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
                         Created Date:
                       </span>
-                      <p className="font-semibold text-slate-700">
+                      <p className="w-full font-semibold text-slate-700 dark:text-slate-100">
                         {file.createdAt.toDate().toDateString()}
                       </p>
                     </article>
                     {/* file size */}
-                    <article className="flex gap-3 justify-start items-center  p-1 ">
-                      <span className="w-32 font-bold  text-slate-500">
+                    <article className="flex gap-3 justify-start items-center flex-col sm:flex-row  p-1 border border-slate-900 rounded-lg my-1">
+                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
                         File Size:
                       </span>
-                      <p className="font-semibold text-slate-700">
-                        {(fileModel.size / 1000000).toString().slice(0, 4)} MB
+                      <p className="w-full font-semibold text-slate-700 dark:text-slate-100">
+                        {(fileModel.size / 3000000).toString().slice(0, 5)} MB
                       </p>
                     </article>
                     {/* file type */}
-                    <article className="flex gap-3 justify-start items-center  p-1 ">
-                      <span className="w-32 font-bold  text-slate-500">
+                    <article className="flex gap-3 justify-start items-center flex-col sm:flex-row p-1 border border-slate-900 rounded-lg my-1">
+                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
                         File Type:
                       </span>
-                      <p className="font-semibold text-slate-700">
+                      <p className="w-full font-semibold text-slate-700 dark:text-slate-100">
                         {fileModel.type}
                       </p>
                     </article>
                     {/* file path */}
-                    <article className="flex gap-3 justify-start items-center  p-1 ">
-                      <span className="min-w-[8rem] font-bold  text-slate-500">
+                    <article className="flex gap-3 justify-start flex-col sm:flex-row p-1 border border-slate-900 rounded-lg my-1">
+                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
                         File Path:
                       </span>
-                      <p className="font-semibold text-slate-700 ">
+                      <p className="w-full font-semibold text-slate-700 dark:text-slate-100 ">
                         {fileModel.path}
                       </p>
                     </article>
                   </div>
                   {/* Buttons */}
-                  <div className="flex flex-col justify-center gap-3">
-                    {/* file delete */}
-                    <article
-                      onClick={() => handleDelete(fileModel.id, fileModel.path)}
-                      className="w-10 h-10 cursor-pointer flex justify-center items-center gap-2 text-white bg-rose-500 hover:bg-rose-600 p-2 rounded-xl shadow-md duration-300"
+                  <div className="flex flex-row-reverse sm:flex-col justify-center gap-3">
+                    {/* close Modal */}
+                    <button
+                      onClick={() => setFileModel(null)}
+                      className="w-10 h-10 cursor-pointer flex justify-center items-center gap-2 text-black bg-slate-300 p-2 px-3 rounded-xl shadow-md duration-300"
                     >
-                      {/* <span className="font-semibold text-sm">Delete</span> */}
+                      {/* <span className="font-bold text-base">Close</span> */}
                       <div className="text-xl">
-                        <MdDelete />
+                        <MdClose />
                       </div>
-                    </article>
+                    </button>
                     {/* file download */}
                     <Link
                       to={fileModel.url}
@@ -328,16 +329,17 @@ const File = ({ file, currentFolder }) => {
                         <MdDownload />
                       </div>
                     </Link>
-                    {/* close Modal */}
-                    <article
-                      onClick={() => setFileModel(null)}
-                      className="w-10 h-10 cursor-pointer flex justify-center items-center gap-2 text-black bg-slate-300 p-2 px-3 rounded-xl shadow-md duration-300"
+
+                    {/* file delete */}
+                    <button
+                      onClick={() => handleDelete(fileModel.id, fileModel.path)}
+                      className="w-10 h-10 cursor-pointer flex justify-center items-center gap-2 text-white bg-rose-500 hover:bg-rose-600 p-2 rounded-xl shadow-md duration-300"
                     >
-                      {/* <span className="font-bold text-base">Close</span> */}
+                      {/* <span className="font-semibold text-sm">Delete</span> */}
                       <div className="text-xl">
-                        <MdClose />
+                        <MdDelete />
                       </div>
-                    </article>
+                    </button>
                   </div>
                 </div>
                 {/* {JSON.stringify(fileModel)} */}

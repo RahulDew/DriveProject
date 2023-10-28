@@ -1,20 +1,18 @@
 import { initializeApp } from "firebase/app";
-// import firebase from "firebase/app";
 import { getAuth, GoogleAuthProvider, updateProfile } from "firebase/auth";
 import { Firestore, getFirestore, serverTimestamp } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { collection, addDoc, getDoc, doc } from "firebase/firestore";
-// import firebase from "firebase";
-// import { Firestore } from "firebase/firestore";
+import { collection} from "firebase/firestore";
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCVDepWRlZ7_f5FysW3mv5FaU_l2hehWss",
-  authDomain: "fir-crud-app-1f464.firebaseapp.com",
-  projectId: "fir-crud-app-1f464",
-  storageBucket: "fir-crud-app-1f464.appspot.com",
-  messagingSenderId: "153501872010",
-  appId: "1:153501872010:web:ed70cf54fc8fab4134e273",
-  measurementId: "G-V0JCBRY9Y0",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGEBUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
@@ -35,28 +33,3 @@ export const formatter = {
     return { id: doc.id, ...doc.data() };
   },
 };
-
-export const operation = {
-  // addFolderDoc: async ({ name, userId, parentId, createdTime }) => {
-  //   const folderDocRef = await addDoc(database.folders, {
-  //     name,
-  //     userId,
-  //     parentId,
-  //     createdTime,
-  //   });
-  //   console.log(folderDocRef);
-  // },
-  // getFolderDoc: async (id) => {
-  //   console.log("haan chal rha h ");
-  //   const folderDoc = await getDoc(
-  //     doc(database.folders, "m4YTWmJCKy5ji5UraJEI")
-  //   );
-  //   const folderDocData = await folderDoc.data();
-  //   return folderDocData;
-  // },
-};
-
-// export const database = {
-//   folders: db.collection("folders"),
-//   files: db.collection("files"),
-// };

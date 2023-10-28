@@ -1,15 +1,15 @@
 import React from "react";
-import { FcHome } from "react-icons/fc";
+import { HiOutlineHome } from "react-icons/hi";
 import { ROOT_FOLDER } from "../hooks/useFolder";
 import { Link } from "react-router-dom";
 
 const FolderBreadCrumb = ({ currentFolder }) => {
   let path = currentFolder === ROOT_FOLDER ? [] : [ROOT_FOLDER];
   if (currentFolder) path = [...path, ...currentFolder.path];
-  //   console.log("bhsi:", path);
+  //   console.log("bhai:", path);
   return (
-    <div className="text-lg flex gap-2 items-center bg-slate-400 bg-opacity-30 hover:bg-opacity-40 duration-200  w-full h-10  p-2 font-semibold rounded-lg">
-      <FcHome className="text-2xl" />
+    <div className="w-full p-2.5 bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-100 flex justify-start items-center gap-2 rounded-xl text-lg shadow-md duration-300 font-semibold">
+      <HiOutlineHome className="text-2xl" />
       {path.map((folder, index) => (
         <Link
           to={{
@@ -17,13 +17,19 @@ const FolderBreadCrumb = ({ currentFolder }) => {
             state: { folder: { ...folder, path: path.slice(1, index) } },
           }}
           key={folder.id}
-          className="truncate hover:underline cursor-pointer"
+          className="sm:truncate hover:underline cursor-pointer"
         >
           {folder.name} /
         </Link>
       ))}
-      {currentFolder && (
-        <div className="truncate text-blue-600 select-none">{currentFolder.name}</div>
+      {currentFolder ? (
+        <div className="sm:truncate text-blue-600 select-none">
+          {currentFolder.name}
+        </div>
+      ) : (
+        <div className="sm:truncate text-blue-600 select-none">
+          ...
+        </div>
       )}
     </div>
   );
