@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 const Home = () => {
   const { darkMode, toasts, removeToast } = useAuthContext();
   const [toggleVisible, setToggleVisible] = useState(false);
+  const [isOnline, setOnline] = useState(true);
 
   const handleToggleVisible = () => {
     const scrolled = document.documentElement.scrollTop;
@@ -19,7 +20,16 @@ const Home = () => {
     }
   };
 
+  // event listeners called when scroll
   window.addEventListener("scroll", handleToggleVisible);
+
+  // event listeners to update online state
+  window.addEventListener("online", () => {
+    setOnline(true);
+  });
+  window.addEventListener("offline", () => {
+    setOnline(false);
+  });
 
   // console.log(toasts);
 
@@ -63,6 +73,24 @@ const Home = () => {
           </motion.div>
         )}
       </div>
+
+      {!isOnline && (
+        <div className="fixed inset-0 z-40 overflow-y-auto">
+          <div className="fixed inset-0 bg-gray-800 opacity-70 dark:bg-slate-950 dark:opacity-80 transition-opacity"></div>
+          <div className="flex min-h-full justify-center items-start mt-10 text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-72 text-lg relative overflow-hidden rounded-xl font-semibold bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-left shadow-xl"
+            >
+              {/* main content */}
+              <div className="p-4 flex justify-center items-center">
+                NO Internet Connection !!!
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -5,8 +5,9 @@ import { useAuthContext } from "../../context/AuthContext";
 
 import { Formik } from "formik";
 import * as yup from "yup";
+import { motion } from "framer-motion";
 
-import { MdOutlineErrorOutline } from "react-icons/md";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import GoogleSignin from "../../widgits/GoogleSignin";
 
 const Login = () => {
@@ -20,7 +21,7 @@ const Login = () => {
     authLoading,
     setAuthLoading,
     authError,
-    setAuthError,
+    handleAuthError,
   } = useAuthContext();
 
   const loginSchema = yup.object().shape({
@@ -44,24 +45,21 @@ const Login = () => {
   };
 
   const handleFormikLogin = async (values, onSubmitProps) => {
-    // console.log(values);
     setAuthLoading(true);
     try {
       const loggedUser = await logIn(values.email, values.password);
       onSubmitProps.resetForm();
-      // console.log(loggedUser);
       if (loggedUser.user.uid) Navigate("/", { replace: true });
     } catch (error) {
-      // console.log("user does not exist", error);
       if (
         error.code == "auth/invalid-email" ||
         error.code == "auth/wrong-password"
       ) {
         console.log("Your email or password was incorrect!");
-        setAuthError("Your email or password was incorrect!!!");
+        handleAuthError("Your email or password was incorrect!!!");
       } else {
         console.log("Can't able to create an account, Please try again!!!");
-        setAuthError("Can't able to create an account, Please try again!!!");
+        handleAuthError("Can't able to create an account, Please try again!!!");
       }
     }
     setAuthLoading(false);
@@ -122,18 +120,22 @@ const Login = () => {
                     onBlur={handleBlur}
                     placeholder="Ex. johndoe@email.com"
                     required
-                    className="w-full rounded-md p-2 text-[17px] outline-none text-black dark:text-slate-300 placeholder:text-slate-500 bg-transparent border-2 border-slate-500 focus:border-blue-600 duration-300"
+                    className="w-full rounded-lg p-2 text-[17px] outline-none text-black dark:text-slate-300 placeholder:text-slate-500 bg-transparent border-2 border-slate-500 focus:border-blue-600 duration-300"
                   />
 
                   {touched.email && (
-                    <p className="text-red-500 text-left text-sm mt-1">
+                    <motion.p
+                      initial={{ opacity: 0.5, y: "-3px" }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 text-left text-sm mt-1"
+                    >
                       {touched.email && errors.email}
-                    </p>
+                    </motion.p>
                   )}
                 </div>
               </div>
 
-              <div className="flex flex-col justify-start items-start">
+              <div className=" relative flex flex-col justify-start items-start">
                 <label className="text-base font-medium leading-6">
                   Password
                 </label>
@@ -147,28 +149,39 @@ const Login = () => {
                     onBlur={handleBlur}
                     required
                     placeholder="Ex. ......"
-                    className="w-full rounded-md p-2 text-[17px] outline-none text-black dark:text-slate-300 placeholder:text-slate-500 bg-transparent border-2 border-slate-500 focus:border-blue-600 duration-300"
+                    className="w-full rounded-lg p-2 text-[17px] outline-none text-black dark:text-slate-300 placeholder:text-slate-500 bg-transparent border-2 border-slate-500 focus:border-blue-600 duration-300"
                   />
 
-                  {/* {touched.password && errors.password && (
-                    <div className="flex gap-2 items-center text-red-500 text-left text-sm">
-                      <MdOutlineErrorOutline />
-                      <p>{touched.password && errors.password}</p>
-                    </div>
-                  )} */}
+                  {/* password visibility changer */}
+                  <div
+                    onClick={() =>
+                      setShowPassword((prevShowPassword) => !prevShowPassword)
+                    }
+                    className="absolute right-3 top-11 text-[22px] hover:text-blue-600 duration-200 cursor-pointer"
+                  >
+                    {showPassword ? (
+                      <AiOutlineEyeInvisible />
+                    ) : (
+                      <AiOutlineEye />
+                    )}
+                  </div>
 
                   {touched.password && (
-                    <p className="text-red-500 text-left text-sm mt-1">
+                    <motion.p
+                      initial={{ opacity: 0.5, y: "-3px" }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 text-left text-sm mt-1"
+                    >
                       {touched.password && errors.password}
-                    </p>
+                    </motion.p>
                   )}
                 </div>
               </div>
 
-              <div className="">
+              <div>
                 <button
                   type="submit"
-                  className="shadow-lg mt- flex w-full justify-center mt-5 rounded-md outline-none bg-blue-600 p-3  text-base font-semibold text-white focus:bg-blue-700 hover:bg-blue-700 duration-300"
+                  className="shadow-lg mt- flex w-full justify-center mt-5 rounded-lg outline-none bg-blue-600 p-3  text-base font-semibold text-white focus:bg-blue-700 hover:bg-blue-700 duration-300"
                 >
                   {authLoading ? "Logging..." : "Login"}
                 </button>
@@ -181,6 +194,7 @@ const Login = () => {
           {authError && authError}
         </h3>
 
+        {/* porget password page navigator */}
         <Link
           to={"/auth/forgot-password"}
           className="font-semibold mx-2 leading-6 text-blue-600 hover:text-blue-500"
@@ -193,6 +207,7 @@ const Login = () => {
         {/* Google Login Button */}
         <GoogleSignin handleGoogleSignIn={handleGoogleLogIn} />
 
+        {/* navigate to signup page */}
         <p className="mt-5 text-center text-sm text-slate-700 dark:text-slate-300">
           Don't Have Account?
           <Link

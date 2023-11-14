@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { MdOutlineErrorOutline } from "react-icons/md";
-
 import { Formik } from "formik";
 import * as yup from "yup";
-// import Dropzone, { useDropzone } from "react-dropzone";
 import FileDropZone from "../widgits/FileDropZone";
 
 import { useAuthContext } from "../context/AuthContext";
@@ -21,7 +18,7 @@ import {
 } from "firebase/firestore";
 import { v4 as uuidV4 } from "uuid";
 
-import { updateProfile, sendEmailVerification } from "firebase/auth";
+import { updateProfile } from "firebase/auth";
 import { storage } from "../config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 
@@ -47,6 +44,7 @@ const profileSchema = yup.object().shape({
 
 const UpdateProfile = () => {
   const [fileUploadStatus, setFileUploadStatus] = useState(null);
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
   const { currentUser } = useAuthContext();
   const Navigate = useNavigate();
@@ -61,7 +59,20 @@ const UpdateProfile = () => {
     //   );
     // }
 
+    // setFileUploadStatus(true);
+    setIsUpdatingProfile(true);
+
     const id = uuidV4();
+    // query to get the current user profile document
+    const getProfileQuery = query(
+      database.users,
+      where("email", "==", currentUser.email),
+      where("userId", "==", currentUser.uid)
+    );
+
+    const oldUserDocRef = await getDocs(getProfileQuery);
+    const formattedOldUserDoc = oldUserDocRef.docs.map(formatter.formatDoc)[0];
+    console.log("formattedOldUserDoc exists: ", formattedOldUserDoc);
 
     // setFileUploadStatus({
     //   id: id,
@@ -70,104 +81,143 @@ const UpdateProfile = () => {
     //   error: false,
     // });
 
-    // handling from
-    const profilePhotoRef = ref(
-      storage,
-      `/profile/${currentUser.uid}/${currentUser.email + "_profile_picutre"}`
-    );
+    if (values.profileImageFile) {
+      console.log(
+        "bhai profileImageFile h isliye file bhi upload or update kr rha hu !"
+      );
+      // creating storage reference for profile image file
+      const profilePhotoRef = ref(
+        storage,
+        `/profile/${currentUser.uid}/${currentUser.email + "_profile_picutre"}`
+      );
+      // uploading the profile image file
+      const uploadTask = uploadBytesResumable(
+        profilePhotoRef,
+        values.profileImageFile
+      );
+      console.log("File is uploading: ", uploadTask);
 
-    const uploadTask = uploadBytesResumable(
-      profilePhotoRef,
-      values.profileImageFile
-    );
-    console.log("File is uploading: ", uploadTask);
+      //uploading image and creating or updating user document
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
-    //uploading image and creating or updating user document
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setFileUploadStatus({
+            ...fileUploadStatus,
+            id: id,
+            name: values.profileImageFile.name,
+            progress: progress,
+            error: false,
+          });
+        },
+        (err) => {
+          // managing error when uploading
+          // console.log("error se:", fileUploadStatus);
+          setFileUploadStatus({
+            ...fileUploadStatus,
+            id: id,
+            name: values.profileImageFile.name,
+            progress: progress,
+            error: err,
+          });
+        },
+        async () => {
+          //getting the file URL
+          const profilePictureUrl = await getDownloadURL(
+            uploadTask.snapshot.ref
+          );
+          console.log("File is uploaded here's link: ", profilePictureUrl);
 
-        setFileUploadStatus({
-          ...fileUploadStatus,
-          id: id,
-          name: values.profileImageFile.name,
-          progress: progress,
-          error: false,
-        });
-      },
-      (err) => {
-        // managing error when uploading
-        // console.log("error se:", fileUploadStatus);
-        setFileUploadStatus({
-          ...fileUploadStatus,
-          id: id,
-          name: values.profileImageFile.name,
-          progress: progress,
-          error: err,
-        });
-      },
-      async () => {
-        //gettting the file URL
-        const profilePictureUrl = await getDownloadURL(uploadTask.snapshot.ref);
-        console.log("File is uploaded here's link: ", profilePictureUrl);
-        // profilePictureUrl = fileUrl;
-
-        //updating profile
-        await updateProfile(currentUser, {
-          displayName: values.username,
-          photoURL: profilePictureUrl,
-        });
-
-        // creating document to firestore database
-        const q = query(
-          database.users,
-          where("email", "==", currentUser.email),
-          where("userId", "==", currentUser.uid)
-        );
-        const oldUserDocRef = await getDocs(q);
-        const formattedOldUserDoc = oldUserDocRef.docs.map(
-          formatter.formatDoc
-        )[0];
-        console.log("formattedOldUserDoc exists: ", formattedOldUserDoc);
-
-        if (formattedOldUserDoc) {
-          console.log("updating the old  user document...");
-          const userDocRef = doc(database.users, formattedOldUserDoc.id);
-          await updateDoc(userDocRef, {
-            username: values.username,
-            fullName: values.fullName,
-            DOB: values.DOB,
+          //updating currentUser's displayName(username) and photoURL(profile image)
+          await updateProfile(currentUser, {
+            displayName: values.username,
             photoURL: profilePictureUrl,
           });
-          console.log("Updated the old Document");
-        } else {
-          console.log("creating a new user document...");
-          const newUserDoc = await addDoc(database.users, {
-            userId: currentUser.uid,
-            email: currentUser.email,
-            emailVerified: currentUser.emailVerified,
-            username: values.username,
-            fullName: values.fullName,
-            DOB: values.DOB,
-            photoURL: profilePictureUrl,
-            createdAt: database.currentTimeStamp,
-          });
-          console.log("newUserDoc Created: ", newUserDoc);
+
+          // creating document to firestore database
+          if (formattedOldUserDoc) {
+            console.log("updating the old  user document...");
+            const userDocRef = doc(database.users, formattedOldUserDoc.id);
+            await updateDoc(userDocRef, {
+              username: values.username,
+              fullName: values.fullName,
+              DOB: values.DOB,
+              photoURL: profilePictureUrl,
+            });
+            console.log("Updated the old Document");
+          } else {
+            console.log("creating a new user document...");
+            const newUserDoc = await addDoc(database.users, {
+              userId: currentUser.uid,
+              email: currentUser.email,
+              emailVerified: currentUser.emailVerified,
+              username: values.username,
+              fullName: values.fullName,
+              DOB: values.DOB,
+              photoURL: profilePictureUrl,
+              createdAt: database.currentTimeStamp,
+            });
+            console.log("newUserDoc Created: ", newUserDoc);
+          }
+
+          //removing file uploading from the UploadingProfilePicture state
+          setFileUploadStatus(null);
+          setIsUpdatingProfile(false);
+          onSubmitProps.resetForm();
+          if (currentUser.emailVerified) {
+            Navigate("/", { replace: true });
+          } else {
+            Navigate("/auth/verifyEmail", { replace: true });
+          }
         }
-
-        // //removing file uploading from the UploadingProfilePicture state
-        setFileUploadStatus(null);
-        onSubmitProps.resetForm();
-        Navigate("/verifyEmail", { replace: true });
+      );
+    } else {
+      console.log(
+        "bhai profileImageFile nhi h isliye direct documentt create kr rha hu!"
+      );
+      setFileUploadStatus(true);
+      // updating the currentUser displayName(username)
+      await updateProfile(currentUser, {
+        displayName: values.username,
+      });
+      // creating or updating document to firestore database without profile image
+      if (formattedOldUserDoc) {
+        console.log("updating the old  user document...");
+        const userDocRef = doc(database.users, formattedOldUserDoc.id);
+        await updateDoc(userDocRef, {
+          username: values.username,
+          fullName: values.fullName,
+          DOB: values.DOB,
+          // photoURL: profilePictureUrl,
+        });
+        console.log("Updated the old Document");
+      } else {
+        console.log("creating a new user document...");
+        const newUserDoc = await addDoc(database.users, {
+          userId: currentUser.uid,
+          email: currentUser.email,
+          emailVerified: currentUser.emailVerified,
+          username: values.username,
+          fullName: values.fullName,
+          DOB: values.DOB,
+          // photoURL: profilePictureUrl,
+          createdAt: database.currentTimeStamp,
+        });
+        console.log("newUserDoc Created: ", newUserDoc);
       }
-    );
 
-    // if (currentUser.emailVerified) {
-    // } else {
-    //   alert("Bhai inka verify nhi h email");
-    // }
+      //setting setIsUpdatingProfile state to false
+      setIsUpdatingProfile(false);
+
+      onSubmitProps.resetForm();
+      if (currentUser.emailVerified) {
+        Navigate("/", { replace: true });
+      } else {
+        Navigate("/auth/verifyEmail", { replace: true });
+      }
+    }
   };
 
   return (
@@ -178,10 +228,10 @@ const UpdateProfile = () => {
           <span className="block">Hey,</span> {currentUser.email}
         </p>
         <h2 className="text-center text-5xl md:text-6xl font-bold tracking-tight dark:text-slate-200">
-          We Got You Dude
+          We Got You, Dude
         </h2>
         <p className="text-center text-xl md:text-2xl tracking-tight text-slate-700 dark:text-slate-400 font-light">
-          Please Complete your profile, Ensuring that your Data will be Safe and
+          Please Update your profile, Ensuring that your Data will be Safe and
           Secure and we don't share your information with anyone...
         </p>
       </div>
@@ -222,13 +272,13 @@ const UpdateProfile = () => {
                     onBlur={handleBlur}
                     placeholder="Ex. john221"
                     required
-                    className="w-full rounded-md p-2 text-[17px] outline-none bg-transparent border-2 border-slate-600 dark:border-slate-600 dark:placeholder:text-slate-500 focus:border-blue-600 duration-300"
+                    className="w-full rounded-lg p-2 text-[17px] outline-none bg-transparent border-2 border-slate-600 dark:border-slate-600 dark:placeholder:text-slate-500 focus:border-blue-600 duration-300"
                   />
-                  {touched.username && errors.username && (
-                    <div className="flex gap-2 items-center text-red-500 text-left text-sm">
-                      <MdOutlineErrorOutline />
-                      <p>{touched.username && errors.username}</p>
-                    </div>
+
+                  {touched.username && (
+                    <p className="text-red-500 text-left text-sm mt-1">
+                      {touched.username && errors.username}
+                    </p>
                   )}
                 </div>
               </div>
@@ -246,16 +296,13 @@ const UpdateProfile = () => {
                     onBlur={handleBlur}
                     required
                     placeholder="Ex. John Doe"
-                    className="w-full rounded-md p-2 text-[17px] outline-none border-slate-500 dark:border-slate-600 dark:placeholder:text-slate-500 bg-transparent border-2  focus:border-blue-600 duration-300"
+                    className="w-full rounded-lg p-2 text-[17px] outline-none border-slate-500 dark:border-slate-600 dark:placeholder:text-slate-500 bg-transparent border-2  focus:border-blue-600 duration-300"
                   />
-                  {/* <p className="text-red-500 text-left text-sm">
-                        {touched.fullName && errors.fullName}
-                      </p> */}
-                  {touched.fullName && errors.fullName && (
-                    <div className="flex gap-2 items-center text-red-500 text-left text-sm">
-                      <MdOutlineErrorOutline />
-                      <p>{touched.fullName && errors.fullName}</p>
-                    </div>
+
+                  {touched.fullName && (
+                    <p className="text-red-500 text-left text-sm mt-1">
+                      {touched.fullName && errors.fullName}
+                    </p>
                   )}
                 </div>
               </div>
@@ -272,13 +319,13 @@ const UpdateProfile = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className="w-full rounded-md p-2 text-[17px] outline-none bg-transparent border-2 border-slate-500 dark:border-slate-600 dark:placeholder:text-slate-500 focus:border-blue-600 duration-300"
+                    className="w-full rounded-lg p-2 text-[17px] outline-none bg-transparent border-2 border-slate-500 dark:border-slate-600 dark:placeholder:text-slate-500 focus:border-blue-600 duration-300"
                   />
-                  {touched.DOB && errors.DOB && (
-                    <div className="flex gap-2 items-center text-red-500 text-left text-sm">
-                      <MdOutlineErrorOutline />
-                      <p>{touched.DOB && errors.DOB}</p>
-                    </div>
+
+                  {touched.DOB && (
+                    <p className="text-red-500 text-left text-sm mt-1">
+                      {touched.DOB && errors.DOB}
+                    </p>
                   )}
                 </div>
               </div>
@@ -292,7 +339,7 @@ const UpdateProfile = () => {
                     values.profileImageFile
                       ? "border-blue-600"
                       : "border-slate-500"
-                  } rounded-md my-2 flex justify-center items-center`}
+                  } rounded-lg my-2 flex justify-center items-center`}
                 >
                   <FileDropZone
                     values={values}
@@ -304,7 +351,7 @@ const UpdateProfile = () => {
                       </p> */}
                 </div>
               </div>
-              {fileUploadStatus && (
+              {fileUploadStatus && values.profileImageFile && (
                 <div className="bg-transparent p-1 rounded-md flex flex-col gap-2">
                   {/* Progress Barand and State */}
                   <div className="w-full h-2 rounded-full">
@@ -331,15 +378,15 @@ const UpdateProfile = () => {
                   </div>
                 </div>
               )}
-              <div className="">
+              <div>
                 <button
                   type="submit"
-                  disabled={fileUploadStatus ? true : false}
+                  disabled={isUpdatingProfile ? true : false}
                   className={` ${
-                    fileUploadStatus && "cursor-not-allowed"
-                  } shadow-lg mt- flex w-full justify-center mt-5 rounded-md outline-none bg-blue-600 p-3  text-base font-semibold text-white focus:bg-blue-700 hover:bg-blue-700 duration-300`}
+                    isUpdatingProfile && "cursor-not-allowed"
+                  } shadow-lg mt- flex w-full justify-center mt-5 rounded-lg outline-none bg-blue-600 p-3  text-base font-semibold text-white focus:bg-blue-700 hover:bg-blue-700 duration-300`}
                 >
-                  {fileUploadStatus ? "Updating Profile..." : "Update Profile"}
+                  {isUpdatingProfile ? "Updating Profile..." : "Update Profile"}
                 </button>
               </div>
             </form>

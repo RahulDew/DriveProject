@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { query, where, onSnapshot } from "firebase/firestore";
 import { database } from "../config/firebase";
 import { formatter } from "../config/firebase";
-import { Timestamp } from "firebase/firestore";
+// import { Timestamp } from "firebase/firestore";
 
 const recentFilesTimeStamps = [
   { text: "5", time: 5 },
@@ -22,19 +22,13 @@ const recentFilesTimeStamps = [
 const Recents = () => {
   const [recentFiles, setRecentFiles] = useState(null);
 
-  // recently added files within 5 days
-  const [recentFileTime, setRecentFilesTime] = useState(5);
+  // recently added files within default 5 days
+  const [recentFilesTime, setRecentFilesTime] = useState(5);
 
   // console.log(recentFiles);
 
   //getting allFiles State
   const { currentUser } = useAuthContext();
-
-  // const searchRecentQ = query(
-  //   database.files,
-  //   where("userId", "==", currentUser.uid),
-  //   where("createdAt", ">=", Timestamp.now() - recentFileTime)
-  // );
 
   const currentDate = new Date(); //getting the current date
   // console.log(currentDate);
@@ -42,71 +36,18 @@ const Recents = () => {
   // console.log(currentDate);
   const daysAgo = new Date(currentDate);
   // console.log(daysAgo);
-  daysAgo.setDate(daysAgo.getDate() - recentFileTime);
-  console.log(daysAgo);
+  daysAgo.setDate(daysAgo.getDate() - recentFilesTime);
+  // console.log(daysAgo);
 
-  const searchRecentQ = query(
+  const searchRecentFilesQ = query(
     database.files,
     where("userId", "==", currentUser.uid),
     where("createdAt", ">=", daysAgo)
   );
 
-  // const currentDate = new Date();
-
-  // console.log("aaj ka date = ", database.currentTimeStamp);
-  // console.log("aaj ka date = ", Timestamp.now().seconds );
-  // console.log("compare = ", Timestamp.now() - recentFileTime );
-
-  // console.log(Date());
-  // var tomorrow = Date();
-  // tomorrow.setDate(tomorrow. + 1);
-  // const now = new DateTime.now().millisecondsSinceEpoch
-
-  // useEffect(() => {
-  //   //   // if (Array.isArray(allFiles) && allFiles.length) {
-  //   //   //   const recentlyAddedFiles = allFiles.filter((file) => {
-  //   //   //     if (new Date() - file.createdAt.toDate() <= recentFileTime) {
-  //   //   //       // // console.log(new Date() - file.createdAt.toDate());
-  //   //   //       // console.log( file.createdAt.seconds + "  :  " + recentFileTime);
-  //   //   //       // // console.log(file.createdAt > (Timestamp.now().seconds - recentFileTime));
-  //   //   //       console.log(
-  //   //   //         "direct compare",
-  //   //   //         file.createdAt +
-  //   //   //           " :  " +
-  //   //   //           Timestamp.now() +
-  //   //   //           " :  " +
-  //   //   //           (Timestamp.now() - recentFileTime)
-  //   //   //       );
-
-  //   //   //       return file;
-  //   //   //     }
-  //   //   //   });
-
-  //   //   //   setRecentFiles(recentlyAddedFiles);
-  //   //   //   console.log("bhai recent files set kr diya");
-  //   //   // } else {
-  //   //   //   return;
-  //   //   // }
-
-  //   //   console.log("bhai recent files la rha hu");
-
-  //   const unsubscribe = onSnapshot(searchRecentQ, (snapshot) => {
-  //     const files = snapshot.docs.map(formatter.formatDoc);
-  //     console.log("Recent files in " + recentFileTime + "days: ");
-  //     console.log(files);
-  //     if (files.length) {
-  //     }
-  //     setRecentFiles(files);
-  //     // setContentLoading(false);
-  //   });
-
-  //   return unsubscribe;
-  // }, []);
-
   useEffect(() => {
-    const unsubscribe = onSnapshot(searchRecentQ, (snapshot) => {
+    const unsubscribe = onSnapshot(searchRecentFilesQ, (snapshot) => {
       const files = snapshot.docs.map(formatter.formatDoc);
-      // console.log("Recent files in " + recentFileTime + "days: ");
       // console.log(files);
       if (files.length) {
       }
@@ -114,35 +55,7 @@ const Recents = () => {
     });
 
     return unsubscribe;
-  }, [recentFileTime]);
-
-  // useEffect(() => {
-  //   if (Array.isArray(allFiles) && allFiles.length) {
-  //     const recentlyAddedFiles = allFiles.filter((file) => {
-  //       if (new Date() - file.createdAt.toDate() <= recentFileTime) {
-  //         // console.log(new Date() - file.createdAt.toDate());
-  //         return file;
-  //       }
-  //     });
-
-  //     setRecentFiles(recentlyAddedFiles);
-  //     console.log("bhai recent files set kr diya");
-  //   } else {
-  //     return;
-  //   }
-  // }, [allFiles, recentFileTime]);
-
-  // const getFileUploadDaysDiff = (createdAt) => {
-  //   // console.log(JSON.stringify(createdAt.toDate())); //befor
-  //   // console.log(JSON.stringify(new Date()));
-  //   const createdAtDate = createdAt.toDate();
-  //   const currentDate = new Date();
-  //   const difference = currentDate - createdAtDate;
-  //   console.log(difference);
-
-  //   const daysDifference = Math.floor(700000000 / (1000 * 60 * 60 * 24));
-  //   console.log(daysDifference);
-  // };
+  }, [recentFilesTime]);
 
   return (
     <div className="sm:px-5 h-full">
@@ -153,20 +66,24 @@ const Recents = () => {
           Use Filter to find files which uploaded recently
         </p>
         {/* timestamp filter */}
-        <div className="w-full sm:w-5/6 md:w-[39rem] flex gap-1.5 items-center justify-between bg-slate-50 dark:bg-slate-900 shadow-xl hover:shadow-blue-200 dark:shadow-none rounded-full p-2 md:p-3 text-xs md:text-[17px] font-semibold duration-300">
-          {recentFilesTimeStamps.map((timeStamp, index) => (
-            <div
-              key={index}
-              onClick={() => setRecentFilesTime(timeStamp.time)}
-              className={`${
-                recentFileTime == timeStamp.time
-                  ? "bg-blue-600 text-white cursor-default"
-                  : "bg-slate-200 hover:bg-blue-100 dark:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-600 dark:hover:bg-blue-950 cursor-pointer "
-              } md:p-2.5 p-3 rounded-full duration-300`}
-            >
-              {timeStamp.text} days ago
-            </div>
-          ))}
+        <div>
+          <div className="w-full sm:w-5/6 md:w-[39rem] flex gap-1.5 items-center justify-between bg-slate-50 dark:bg-slate-900 shadow-xl hover:shadow-blue-200 dark:shadow-none rounded-full p-2 md:p-3 text-xs md:text-[17px] font-semibold duration-300">
+            {recentFilesTimeStamps.map((timeStamp, index) => (
+              <div
+                key={index}
+                onClick={() => setRecentFilesTime(timeStamp.time)}
+                className={`${
+                  recentFilesTime == timeStamp.time
+                    ? "bg-blue-600 text-white cursor-default"
+                    : "bg-slate-200 hover:bg-blue-100 dark:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-600 dark:hover:bg-blue-950 cursor-pointer "
+                } md:p-2.5 p-3 rounded-full duration-300 flex justify-center items-center gap-1 w-10 h-10 sm:w-full sm:h-full`}
+              >
+                <span>{timeStamp.text}</span>
+                <p className="hidden sm:block">days ago</p>
+              </div>
+            ))}
+          </div>
+          <p className="visible sm:hidden mt-2 font-semibold">Days Ago</p>
         </div>
       </div>
 
@@ -183,9 +100,6 @@ const Recents = () => {
                 key={file.id}
               >
                 <File file={file} />
-                <p className="text-xs">
-                  {/* {file.createdAt.toDate().toDateString()} */}
-                </p>
               </motion.div>
             ))
             .reverse()}
@@ -198,18 +112,18 @@ const Recents = () => {
                 You haven't uploaded any file in previous
                 {recentFilesTimeStamps.map(
                   (timeStamp, index) =>
-                    timeStamp.time == recentFileTime && (
-                      <span key={index} className="text-blue-600 mx-2">
+                    timeStamp.time == recentFilesTime && (
+                      <span key={index} className="text-blue-600 mx-2 font-semibold">
                         {timeStamp.text}
                       </span>
                     )
-                )}{" "}
+                )}
                 days
               </h3>
-              <div className="mt-5 flex justify-center items-center gap-3 opacity-40">
-                <FcImageFile className="text-9xl " />
-                <FcAudioFile className="text-9xl " />
-                <FcVideoFile className="text-9xl " />
+              <div className="mt-5 flex justify-center items-center gap-3 opacity-40 text-7xl sm:text-8xl md:text-9xl">
+                <FcImageFile />
+                <FcAudioFile />
+                <FcVideoFile />
               </div>
             </div>
           ) : (

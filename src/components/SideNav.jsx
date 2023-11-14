@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { NavLink, useParams } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
 import Logo from "./logo";
@@ -18,19 +18,78 @@ const links = [
   { url: "/profile", text: "Profile", icon: <FaRegUser /> },
 ];
 
-const SideNav = ({ handleLogout, currentUser, logoutWarning, setLogoutWarning, handleLogoutWarning }) => {
+const SideNav = ({
+  handleLogout,
+  currentUser,
+  logoutWarning,
+  setLogoutWarning,
+  handleLogoutWarning,
+}) => {
   // const { currentUser } = useAuthContext();
   const params = useParams();
-  
 
   return (
     <>
       <aside className="fixed bottom-0 sm:top-0 left-0 z-10 w-full sm:w-16 lg:w-20 sm:h-screen">
-        <div className="h-full px-1 py-4 overflow-y-auto bg-[#c4d5e7] dark:bg-slate-900 flex sm:flex-col justify-between items-center rounded-t-3xl bg-opacity-70 backdrop-blur-lg sm:bg-opacity-100 sm:backdrop-blur-none sm:rounded-none duration-200">
+        <div className="h-full px-1 py-5 overflow-y-auto bg-[#c4d5e7] dark:bg-slate-900 flex sm:flex-col justify-between items-center rounded-t-3xl bg-opacity-70 backdrop-blur-lg dark:bg-opacity-60 sm:dark:bg-opacity-100 sm:bg-opacity-100 sm:backdrop-blur-none sm:rounded-none duration-200">
           <div className="w-full flex sm:flex-col justify-center items-center gap-8">
-            <div className="hidden sm:block">
-              <Logo />
-            </div>
+            <Link to={"/"} className="hidden sm:block">
+              <svg
+                width="50"
+                height="50"
+                viewBox="0 0 90 90"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="trangles" clipPath="url(#clip0_108_2)">
+                  <g id="darkgroup">
+                    <path
+                      id="dark2"
+                      d="M66.4297 58.3602C67.0964 58.7451 67.0964 59.7074 66.4297 60.0923L22.9822 85.1767C22.3155 85.5616 21.4822 85.0805 21.4822 84.3107L21.4822 34.1418C21.4822 33.372 22.3155 32.8909 22.9822 33.2758L66.4297 58.3602Z"
+                      fill="url(#paint0_linear_108_2)"
+                      fillOpacity="0.61"
+                    />
+                    <path
+                      id="dark1"
+                      d="M23.4987 31.9747C22.8311 31.5914 22.8288 30.6291 23.4945 30.2426L66.8822 5.05485C67.548 4.66836 68.3824 5.1475 68.3843 5.9173L68.5037 56.086C68.5055 56.8558 67.6733 57.3389 67.0058 56.9556L23.4987 31.9747Z"
+                      fill="url(#paint1_linear_108_2)"
+                      fillOpacity="0.56"
+                    />
+                  </g>
+                </g>
+                <defs>
+                  <linearGradient
+                    id="paint0_linear_108_2"
+                    x1="67.9297"
+                    y1="59.2262"
+                    x2="16.5"
+                    y2="41.9998"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop offset="0.456376" stopColor="#0066FF" />
+                    <stop offset="1" stopColor="#161BA1" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient
+                    id="paint1_linear_108_2"
+                    x1="21.9966"
+                    y1="31.1122"
+                    x2="68.5"
+                    y2="55.5"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop
+                      offset="0.497754"
+                      stopColor="#F81111"
+                      stopOpacity="0.98"
+                    />
+                    <stop offset="1" stopColor="#00058A" stopOpacity="0" />
+                  </linearGradient>
+                  <clipPath id="clip0_108_2">
+                    <rect width="90" height="90" fill="white" />
+                  </clipPath>
+                </defs>
+              </svg>
+            </Link>
             <ul className=" w-full flex gap-3 sm:flex-col justify-evenly sm:justify-center items-center">
               {links.map((link, index) => (
                 <NavLink
@@ -38,7 +97,7 @@ const SideNav = ({ handleLogout, currentUser, logoutWarning, setLogoutWarning, h
                   to={link.url}
                   className={({ isActive, isPending }) =>
                     isPending
-                      ? "bg-slate-100 text-center p-2.5 text-2xl text-blue-600 rounded-lg duration-200 shadow-md"
+                      ? "bg-slate-100 text-center p-2.5 text-2xl text-blue-600 rounded-2xl duration-200 shadow-md"
                       : (
                           link.text == "All"
                             ? isActive || params.folderId
@@ -66,38 +125,6 @@ const SideNav = ({ handleLogout, currentUser, logoutWarning, setLogoutWarning, h
           </button>
         </div>
       </aside>
-
-      {/* {openAddItemModel && (
-        <div className="fixed inset-0 z-10 overflow-y-auto ">
-          <div
-            onClick={() => setOpenAddItemMod(false)}
-            className="fixed inset-0 bg-slate-800 opacity-70 dark:bg-slate-950 dark:opacity-80 transition-opacity"
-          ></div>
-          <div className="h-screen ">
-            <motion.div
-              layout
-              initial={{ y: "3vh" }}
-              animate={{ y: 0 }}
-              className="relative w-full h-full flex gap-5 justify-center items-end pb-24"
-            >
-              <button
-                className={
-                  "bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-50 hover:text-blue-600 hover:bg-blue-100 text-center rounded-full duration-300 shadow-md"
-                }
-              >
-                <AddFolderButton mobileNav={true} />
-              </button>
-              <button
-                className={
-                  "bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-50 hover:text-blue-600 hover:bg-blue-100 text-center rounded-full duration-300 shadow-md"
-                }
-              >
-                <AddFileButton mobileNav={true} />
-              </button>
-            </motion.div>
-          </div>
-        </div>
-      )} */}
 
       {logoutWarning && (
         <div className="fixed inset-0 z-40 overflow-y-auto ">

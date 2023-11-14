@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
-import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiUploadCloud, FiMoon, FiSun } from "react-icons/fi";
 
 import SideNav from "./SideNav";
 import UploadingFileCard from "../widgits/UploadingFileCard";
 import { motion } from "framer-motion";
+import Logo from "./logo";
 
 const Navbar = () => {
   const [showUploadings, setShowUploadings] = useState(false);
@@ -40,7 +41,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex items-center justify-between " aria-label="Global">
+    <nav className="flex items-center justify-between pt-1" aria-label="Global">
       <SideNav
         handleLogout={handleLogout}
         currentUser={currentUser}
@@ -48,18 +49,71 @@ const Navbar = () => {
         setLogoutWarning={setLogoutWarning}
         handleLogoutWarning={handleLogoutWarning}
       />
-      <div className="flex">
-        <Link to={"/"} className="flex gap-3 p-1.5 pb-3">
-          <span className="font-bold text-3xl">Stasher</span>
-        </Link>
-      </div>
+      {/* logo */}
+      <Link to={"/"} className="flex gap-0 sm:gap-3">
+        <div className="visible sm:hidden">
+          <svg
+            width="42"
+            height="42"
+            viewBox="0 0 82 82"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="trangles">
+              <g id="darkgroup">
+                <path
+                  id="dark2"
+                  d="M59.4902 52.7674C60.1569 53.1523 60.1569 54.1145 59.4902 54.4994L21.9974 76.1459C21.3307 76.5308 20.4974 76.0497 20.4974 75.2799L20.4974 31.9869C20.4974 31.2171 21.3307 30.736 21.9974 31.1209L59.4902 52.7674Z"
+                  fill="url(#paint0_linear_114_6)"
+                  fillOpacity="0.61"
+                />
+                <path
+                  id="dark1"
+                  d="M22.4485 29.986C21.781 29.6026 21.7787 28.6404 22.4444 28.2539L59.8856 6.51823C60.5514 6.13174 61.3858 6.61088 61.3877 7.38068L61.4907 50.6735C61.4926 51.4433 60.6604 51.9265 59.9928 51.5431L22.4485 29.986Z"
+                  fill="url(#paint1_linear_114_6)"
+                  fillOpacity="0.56"
+                />
+              </g>
+            </g>
+            <defs>
+              <linearGradient
+                id="paint0_linear_114_6"
+                x1="60.9902"
+                y1="53.6334"
+                x2="16.154"
+                y2="38.6154"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0.456376" stopColor="#0066FF" />
+                <stop offset="1" stopColor="#161BA1" stopOpacity="0" />
+              </linearGradient>
+              <linearGradient
+                id="paint1_linear_114_6"
+                x1="20.9465"
+                y1="29.1235"
+                x2="61.488"
+                y2="50.3847"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop
+                  offset="0.497754"
+                  stopColor="#F81111"
+                  stopOpacity="0.98"
+                />
+                <stop offset="1" stopColor="#00058A" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span className="font-bold text-3xl">Stasher</span>
+      </Link>
 
       {/* desktop navigation */}
       <div className="hidden sm:flex items-center justify-between gap-5">
         {/* dark mode toggler */}
         <div
           onClick={handleToggleDarkMode}
-          className="hidden cursor-pointer h-11 w-11 lg:h-12 lg:w-12 bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-50 hover:text-blue-600 hover:bg-white dark:hover:text-blue-600 dark:hover:bg-slate-800  sm:flex justify-center items-center rounded-2xl text-xl sm:text-2xl shadow-md duration-200"
+          className="hidden cursor-pointer h-11 w-11 bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-50 hover:text-blue-600 hover:bg-white dark:hover:text-blue-600 dark:hover:bg-slate-800  sm:flex justify-center items-center rounded-2xl text-xl sm:text-2xl shadow-md duration-200"
         >
           {darkMode ? <FiSun /> : <FiMoon />}
         </div>
@@ -72,7 +126,6 @@ const Navbar = () => {
           {uploadingFiles.length ? (
             <motion.p
               layout
-              // animate={{}}
               transition={{ duration: 0.3 }}
               className="bg-blue-600 curso w-6 h-6 rounded-full text-white text-base font-semibold"
             >
@@ -82,17 +135,18 @@ const Navbar = () => {
             <></>
           )}
         </div>
-        {/* profile route */}
+
+        {/* profile image with profile route */}
         <Link to={"/profile"} className="hidden sm:block">
-          <div className="m-auto h-11 w-11 flex items-center justify-center cursor-pointer bg-orange-500 rounded-2xl shadow-md">
-            {currentUser && currentUser ? (
+          <div className="m-auto h-11 w-11 flex items-center justify-center cursor-pointer bg-slate-800 rounded-2xl shadow-md">
+            {currentUser?.photoURL ? (
               <img
                 src={currentUser.photoURL}
                 alt="Profile"
-                className="object-cover h-full w-full rounded-xl"
+                className="object-cover h-full w-full rounded-2xl"
               />
             ) : (
-              <span className="text-xl font-bold text-white">
+              <span className="text-xl font-bold text-white pb-1">
                 {currentUser.displayName[0].toUpperCase()}
               </span>
             )}
@@ -110,12 +164,12 @@ const Navbar = () => {
           <FiUploadCloud />
           {uploadingFiles.length ? (
             <motion.p
-              layout
+              // layout
               // animate={{}}
               // transition={{ duration: 0.3 }}
               className="text-slate-900 dark:text-blue-600 pb-0.5 text-sm font-semibold duration-200"
             >
-              {uploadingFiles.length} 
+              {uploadingFiles.length}
             </motion.p>
           ) : (
             <></>
@@ -124,16 +178,16 @@ const Navbar = () => {
         {/* currentuser profile image */}
         <div
           onClick={() => setToggleDropdown((prev) => !prev)}
-          className="m-auto w-10 h-10 flex items-center justify-center cursor-pointer bg-orange-500 rounded-xl shadow-md"
+          className="m-auto w-10 h-10 flex items-center justify-center cursor-pointer bg-slate-800 rounded-xl shadow-md"
         >
-          {currentUser && currentUser ? (
+          {currentUser?.photoURL ? (
             <img
               src={currentUser.photoURL}
               alt="Profile"
               className="object-cover h-full w-full rounded-xl"
             />
           ) : (
-            <span className="text-xl font-bold text-white">
+            <span className="text-xl font-bold text-white pb-0.5">
               {currentUser.displayName[0].toUpperCase()}
             </span>
           )}
@@ -143,7 +197,7 @@ const Navbar = () => {
             layout
             initial={{ y: "-2vh" }}
             animate={{ y: 0 }}
-            className="absolute right-0 top-full mt-3 w-full p-3 rounded-xl shadow-lg bg-slate-50 dark:bg-slate-800 min-w-[11rem] flex flex-col gap-2 justify-end items-end"
+            className="z-10 absolute right-0 top-full mt-3 w-full p-3 rounded-xl shadow-lg bg-slate-50 dark:bg-slate-800 min-w-[11rem] flex flex-col gap-2 justify-end items-end"
           >
             {/* darkmode toggler */}
             <button
@@ -165,15 +219,7 @@ const Navbar = () => {
                 </div>
               )}
             </button>
-            {/* <Link
-                className="bg-slate-200 dark:bg-slate-700 p-2 px-4 font-semibold rounded-full flex items-center justify-center gap-2"
-                onClick={() => {
-                  setShowUploadings(true);
-                  setToggleDropdown(false);
-                }}
-              >
-                Uploadings <FiUploadCloud />
-              </Link> */}
+
             {/* logout button */}
             <button
               type="button"

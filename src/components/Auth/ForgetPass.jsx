@@ -5,7 +5,8 @@ import { useAuthContext } from "../../context/AuthContext";
 
 import { Formik } from "formik";
 import * as yup from "yup";
-import { MdOutlineErrorOutline } from "react-icons/md";
+
+import { motion } from "framer-motion";
 
 // forget password schema
 const forgetPasswordSchema = yup.object().shape({
@@ -29,12 +30,8 @@ const ForgetPass = () => {
     authLoading,
     setAuthLoading,
     authError,
-    setAuthError,
+    handleAuthError,
   } = useAuthContext();
-  // const [authError, setAuthError] = useState("");
-
-  // console.log(authLoading);
-  // console.log(authError);
 
   const handleFormikForgetPassword = async (values, onSubmitProps) => {
     console.log(values);
@@ -49,10 +46,10 @@ const ForgetPass = () => {
       console.log(error);
       if (error.code == "auth/user-not-found") {
         console.log("There is no account with this email");
-        setAuthError("There is no account with this email!!!");
+        handleAuthError("There is no account with this email!!!");
       } else {
         console.log("Can't able to send forget password link");
-        setAuthError("Can't able to send forget password link!!!");
+        handleAuthError("Failed to send forget password link!!!");
       }
     }
     setAuthLoading(false);
@@ -103,13 +100,17 @@ const ForgetPass = () => {
                     onBlur={handleBlur}
                     placeholder="Ex. johndoe@email.com"
                     required
-                    className="w-full rounded-md p-2 text-[17px] outline-none text-black dark:text-slate-300 placeholder:text-slate-500  bg-transparent border-2 border-slate-500 focus:border-blue-600 duration-300"
+                    className="w-full rounded-lg p-2 text-[17px] outline-none text-black dark:text-slate-300 placeholder:text-slate-500  bg-transparent border-2 border-slate-500 focus:border-blue-600 duration-300"
                   />
 
                   {touched.email && (
-                    <p className="text-red-500 text-left text-sm mt-1">
+                    <motion.p
+                      initial={{ opacity: 0.5, y: "-3px" }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 text-left text-sm mt-1"
+                    >
                       {touched.email && errors.email}
-                    </p>
+                    </motion.p>
                   )}
                 </div>
               </div>
@@ -117,7 +118,7 @@ const ForgetPass = () => {
               <div>
                 <button
                   type="submit"
-                  className="shadow-lg mt- flex w-full justify-center mt-5 rounded-md outline-none bg-blue-600 p-3  text-base font-semibold text-white focus:bg-blue-700 hover:bg-blue-700 duration-300"
+                  className="shadow-lg flex w-full justify-center mt-5 rounded-lg outline-none bg-blue-600 p-3  text-base font-semibold text-white focus:bg-blue-700 hover:bg-blue-700 duration-300"
                 >
                   {authLoading ? "Sending..." : "Send"}
                 </button>
@@ -140,7 +141,7 @@ const ForgetPass = () => {
           </Link>
         </p>
       </div>
-
+      {/* navigation message */}
       <div className="text-center text-2xl tracking-tight font-light">
         we will send you password reset email with the varification email from
         <span className="text-blue-600 mx-2">

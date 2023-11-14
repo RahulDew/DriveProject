@@ -1,21 +1,15 @@
-import React, { useState, useEffect } from "react";
-// import { useAuthContext } from "../context/AuthContext";
+import React from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useFolder } from "../hooks/useFolder";
 import AddFolderButton from "../widgits/AddFolderButton";
-// import AddFileButton from "../widgits/addFileButton";
 import AddFileButton from "../widgits/AddFileButton";
 
-import { AiOutlineArrowUp } from "react-icons/ai";
-// import { FcHome } from "react-icons/fc";
 import Folder from "../components/Folder";
 import File from "../components/File";
 import FolderBreadCrumb from "../components/FolderBreadCrumb";
 import Loader from "../components/Loader";
 import { motion } from "framer-motion";
 import { FcOpenedFolder, FcFile } from "react-icons/fc";
-import { MdAdd } from "react-icons/md";
-import Toast from "../widgits/Toast";
 
 const DashBoard = () => {
   const { folderId } = useParams();
@@ -29,7 +23,7 @@ const DashBoard = () => {
 
   return (
     <>
-      {/* Yahan se start h  */}
+      {/* file manager nav */}
       <div className="flex justify-between flex-col sm:flex-row items-center gap-4 sm:gap-2 mx-auto my-10">
         <FolderBreadCrumb currentFolder={folder} />
         <div className="w-full sm:w-28 md:w-44 flex flex-row justify-between sm:justify-center items-center ">
@@ -44,8 +38,8 @@ const DashBoard = () => {
       </div>
 
       {/* parent folder name */}
-      <div className="mb-4 pb-2 px-2 sm:px-5 text-xl rounded-xl font-semibold  text-slate-700 dark:text-slate-300 left-0 text-left  ">
-        Folders of {folder && folder.name} :
+      <div className="mb-4 pb-2 px-2 sm:px-5 text-xl rounded-xl font-semibold  text-slate-700 dark:text-slate-300 left-0 text-left break-all ">
+        Folders of {folder ? folder.name : "..."}
       </div>
 
       {/* Child Folders */}
@@ -76,8 +70,8 @@ const DashBoard = () => {
       {/* line break */}
       <hr className="font-bold border-slate-300 dark:border-slate-700 my-4 duration-200" />
 
-      <div className="mb-4 pb-2 px-2 sm:px-5 text-xl rounded-xl font-semibold  text-slate-700 dark:text-slate-300 left-0 text-left">
-        Files of {folder && folder.name} :
+      <div className="mb-4 pb-2 px-2 sm:px-5 text-xl rounded-xl font-semibold  text-slate-700 dark:text-slate-300 left-0 text-left break-all">
+        Files of {folder ? folder.name : "..."}
       </div>
 
       {/* Child Files */}

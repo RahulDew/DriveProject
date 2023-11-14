@@ -1,4 +1,4 @@
-import React, { Children, createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useContext } from "react";
 import { auth, googleProvider } from "../config/firebase";
 import { sendEmailVerification, updateProfile } from "firebase/auth";
@@ -8,7 +8,6 @@ import {
   signInWithEmailAndPassword,
   signOut,
   signInWithPopup,
-  GoogleAuthProvider,
   onAuthStateChanged,
 } from "firebase/auth";
 
@@ -21,15 +20,13 @@ export const AuthProvider = ({ children }) => {
   );
   const [loading, setLoading] = useState(true);
   const [uploadingFiles, setUploadingFiles] = useState([]);
-  const [allFiles, setAllFiles] = useState([]);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
   const [contentLoading, setContentLoading] = useState(false);
 
   // for toast notification
   const [toasts, setToasts] = useState([]);
-  const [autoCloseDuration, setAutoCloseDuration] = useState(5);
-  // const [autoClose, setAutoClose] = useState(true);
+  // const [autoCloseDuration, setAutoCloseDuration] = useState(5);
 
   const signUp = async (email, password) => {
     const { user } = await createUserWithEmailAndPassword(
@@ -40,7 +37,6 @@ export const AuthProvider = ({ children }) => {
     // await updateProfile(auth.currentUser, {
     //   displayName: email.split("@")[0],
     // });
-
     return user;
   };
 
@@ -67,6 +63,18 @@ export const AuthProvider = ({ children }) => {
     setDarkMode(!darkMode);
   };
 
+  const handleAuthError = (message) => {
+    if (message) {
+      setAuthError(message);
+    } else {
+      setAuthError(null);
+    }
+
+    setTimeout(() => {
+      setAuthError(null);
+    }, 5000);
+  };
+
   const handleShowToast = (message, type) => {
     const toast = {
       id: Date.now(),
@@ -84,7 +92,7 @@ export const AuthProvider = ({ children }) => {
     setTimeout(() => {
       removeToast(toast.id);
       // setToasts([]);
-    }, autoCloseDuration * 600);
+    }, 1500);
   };
 
   const removeToast = (toastId) => {
@@ -93,6 +101,7 @@ export const AuthProvider = ({ children }) => {
     );
   };
 
+  // getting the user and verifing authorization
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentuser) => {
       // console.log(currentuser.email);
@@ -115,12 +124,10 @@ export const AuthProvider = ({ children }) => {
     signInWithGoogle,
     uploadingFiles,
     setUploadingFiles,
-    allFiles,
-    setAllFiles,
     authLoading,
     setAuthLoading,
     authError,
-    setAuthError,
+    handleAuthError,
     contentLoading,
     setContentLoading,
     darkMode,

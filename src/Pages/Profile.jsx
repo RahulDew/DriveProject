@@ -10,11 +10,11 @@ import { BsFillShieldSlashFill } from "react-icons/bs";
 import Loader from "../components/Loader";
 import { Link } from "react-router-dom";
 
+import { motion } from "framer-motion";
+
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [itemsCount, setItemsCount] = useState(null);
-  // console.log(profile);
-  // console.log(itemsCount);
 
   const { currentUser, darkMode } = useAuthContext();
 
@@ -59,11 +59,15 @@ const Profile = () => {
   return (
     <>
       {profile && itemsCount ? (
-        <div className="m-auto lg:mt-14 w-full md:w-5/6 lg:w-11/12 h-full lg:h-[65vh] flex flex-col justify-between items-center gap-3 text-slate-800 dark:text-slate-100">
+        <motion.div
+          initial={{ opacity: 0.5, y: "-1vw" }}
+          animate={{ opacity: 1, y: 0 }}
+          className="m-auto lg:mt-14 w-full md:w-5/6 lg:w-11/12 h-full lg:h-[65vh] flex flex-col justify-between items-center gap-3 text-slate-800 dark:text-slate-100"
+        >
           {/* top details */}
-          <div className=" w-full h-full lg:w-[55rem] xl:w-[68rem] lg:h-[15rem] xl:h-[15rem] flex flex-col lg:flex-row justify-center items-center gap-2">
+          <div className="w-full h-full lg:w-[55rem] xl:w-[68rem] lg:h-[15rem] xl:h-[15rem] flex flex-col lg:flex-row justify-center items-center gap-2">
             {/* user image */}
-            <div className="w-[16rem] lg:w-[20rem] xl:w-[22rem] h-full rounded-3xl p-2">
+            <div className="w-[15rem] sm:w-[25rem] md:w-[30rem] lg:w-[20rem] xl:w-[22rem] h-60 lg:h-full rounded-3xl p-2">
               {currentUser?.photoURL ? (
                 <img
                   src={currentUser.photoURL}
@@ -71,7 +75,7 @@ const Profile = () => {
                   className="h-full w-full object-cover rounded-3xl shadow-xl"
                 />
               ) : (
-                <div className="bg-gradient-to-br from-red-500 to-blue-600 shadow-xl h-full w-full flex justify-center items-center rounded-3xl text-7xl font-semibold">
+                <div className="bg-gradient-to-br text-slate-50 from-red-500 to-blue-600 shadow-xl h-full w-full flex justify-center items-center rounded-3xl text-7xl font-semibold">
                   {currentUser.displayName[0].toUpperCase()}
                 </div>
               )}
@@ -104,7 +108,7 @@ const Profile = () => {
 
               <div className="w-full flex justify-center items-center gap-3">
                 {/* email varified check */}
-                <div className="w-full lg:w-[16rem] xl:w-[18rem] h-[6rem] xl:h-[6.5rem] bg-slate-50 dark:bg-slate-800 shadow-xl dark:shadow-none duration-200 rounded-2xl m-auto flex justify-evenly items-center p-2 lg:p-10 gap-2 sm:gap-5">
+                <Link to={"/auth/verifyEmail"} className="w-full lg:w-[16rem] xl:w-[18rem] h-[6rem] xl:h-[6.5rem] bg-slate-50 dark:bg-slate-800 shadow-xl dark:shadow-none duration-200 rounded-2xl m-auto flex justify-evenly items-center p-2 lg:p-10 gap-2 sm:gap-5">
                   {currentUser?.emailVerified ? (
                     <MdVerifiedUser className="text-5xl sm:text-6xl text-emerald-500" />
                   ) : (
@@ -114,7 +118,7 @@ const Profile = () => {
                     <p className="text-xl font-semibold">Varified</p>
                     <p className="text-xl font-semibold">Email</p>
                   </div>
-                </div>
+                </Link>
                 {/* dark mode check */}
                 <div className="w-full lg:w-[16rem] xl:w-[18rem] h-[6rem] xl:h-[6.5rem] bg-slate-50 dark:bg-slate-800 shadow-xl dark:shadow-none duration-200 rounded-2xl m-auto flex justify-evenly items-center p-2 lg:p-10 gap-2 sm:gap-5">
                   {darkMode ? (
@@ -173,9 +177,9 @@ const Profile = () => {
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       ) : (
-        <div className="flex items-center justify-center">
+        <div className="my-80 sm:my-72 h-full flex items-center justify-center">
           <Loader />
         </div>
       )}

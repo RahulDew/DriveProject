@@ -8,6 +8,7 @@ import { v4 as uuidV4 } from "uuid";
 import { useAuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { AiFillFileAdd } from "react-icons/ai";
+import { LuFilePlus2 } from "react-icons/lu";
 
 import FileDropZone from "./FileDropZone";
 // import Loader from "../components/Loader";
@@ -26,205 +27,129 @@ const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
 
     //clearing the fileData State
     setFiles([]);
-
     let promices = [];
+    let uplodedFiles = [];
 
     if (currentFolder == null || files == null) return;
 
-    uploadableFiles.map((file, index) => {
-      //creating unique upload id for each objects in Uploading files
-      const uploadId = uuidV4();
-      setUploadingFiles((prevUploadingFiles) => [
-        ...prevUploadingFiles,
-        {
-          id: uploadId,
-          name: file.name,
-          progress: 0,
-          size: file.size,
-          error: false,
-        },
-      ]);
-      console.log(uploadId);
-      const filePath =
-        currentFolder === ROOT_FOLDER
-          ? `${currentFolder.path.join("/")}/${file.name}`
-          : `${currentFolder.path.map((item) => item.name).join("/")}/${
-              currentFolder.name
-            }/${file.name}`;
+    try {
+      uploadableFiles.map((file) => {
+        //creating unique upload id for each objects in Uploading files
+        const uploadId = uuidV4();
+        setUploadingFiles((prevUploadingFiles) => [
+          ...prevUploadingFiles,
+          {
+            id: uploadId,
+            name: file.name,
+            progress: 0,
+            size: file.size,
+            error: false,
+          },
+        ]);
+        // console.log(uploadId);
+        const filePath =
+          currentFolder === ROOT_FOLDER
+            ? `${currentFolder.path.join("/")}/${file.name}`
+            : `${currentFolder.path.map((item) => item.name).join("/")}/${
+                currentFolder.name
+              }/${file.name}`;
 
-      const filesFolderRef = ref(
-        storage,
-        `/files/${currentUser.uid}/${filePath}`
-      );
-      // console.log("ja rha h...");
-      const uploadTask = uploadBytesResumable(filesFolderRef, file);
-      console.log("reply from server: ", uploadTask);
-      promices.push(uploadTask);
+        const filesFolderRef = ref(
+          storage,
+          `/files/${currentUser.uid}/${filePath}`
+        );
+        // console.log("ja rha h...");
+        const uploadTask = uploadBytesResumable(filesFolderRef, file);
+        console.log("reply from server: ", uploadTask);
+        promices.push(uploadTask);
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setUploadingFiles((prevUploadingFiles) => {
-            return prevUploadingFiles.map((uploadFile) => {
-              if (uploadFile.id === uploadId) {
-                return { ...uploadFile, progress: progress };
-              }
-              return uploadFile;
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadingFiles((prevUploadingFiles) => {
+              return prevUploadingFiles.map((uploadFile) => {
+                if (uploadFile.id === uploadId) {
+                  return { ...uploadFile, progress: progress };
+                }
+                return uploadFile;
+              });
             });
-          });
-        },
-        (err) => {
-          setUploadingFiles((prevUploadingFiles) => {
-            return prevUploadingFiles.map((uploadFile) => {
-              if (uploadFile.id === uploadId) {
-                return { ...uploadFile, error: true };
-              }
-              return uploadFile;
+          },
+          (err) => {
+            setUploadingFiles((prevUploadingFiles) => {
+              return prevUploadingFiles.map((uploadFile) => {
+                if (uploadFile.id === uploadId) {
+                  return { ...uploadFile, error: true };
+                }
+                return uploadFile;
+              });
             });
-          });
-          console.log("Can't upload: ", err);
-        },
-        async () => {
-          //gettting the file URL
-          const fileURL = await getDownloadURL(uploadTask.snapshot.ref);
+            console.log("Can't upload: ", err);
+          },
+          async () => {
+            //gettting the file URL
+            const fileURL = await getDownloadURL(uploadTask.snapshot.ref);
 
-          // updating the already available document using query
-          const q = query(
-            database.files,
-            where("name", "==", file.name),
-            where("userId", "==", currentUser.uid),
-            where("folderId", "==", currentFolder.id)
-          );
-          // console.log("yahan se ho rha h ");
+            // updating the already available document using query
+            const q = query(
+              database.files,
+              where("name", "==", file.name),
+              where("userId", "==", currentUser.uid),
+              where("folderId", "==", currentFolder.id)
+            );
+            // console.log("yahan se ho rha h ");
 
-          const oldFilesRef = await getDocs(q);
-          const formattedOldFile = oldFilesRef.docs.map(formatter.formatDoc)[0];
-          console.log("formattedoldFile: ", formattedOldFile);
-          // console.log("oldfile: ", oldFile.docs.map(formatter.formatDoc)[0]);
-          if (formattedOldFile) {
-            // console.log("oldfile h bhai: ", oldFile);
-            console.log("updating the old file...");
-            // alert("file is already available!");
-            const oldFileRef = doc(database.files, formattedOldFile.id);
-            await updateDoc(oldFileRef, { url: fileURL });
-          } else {
-            console.log("ab new file create kr rha hu bhai!");
-            const fileDocRef = await addDoc(database.files, {
-              url: fileURL,
-              name: file.name,
-              lowerCaseName: file.name.toLowerCase(),
-              folderId: currentFolder.id,
-              path: filePath,
-              userId: currentUser.uid,
-              type: file.type,
-              size: file.size,
-              createdAt: database.currentTimeStamp,
+            const oldFilesRef = await getDocs(q);
+            const formattedOldFile = oldFilesRef.docs.map(
+              formatter.formatDoc
+            )[0];
+            console.log("formattedoldFile: ", formattedOldFile);
+            // console.log("oldfile: ", oldFile.docs.map(formatter.formatDoc)[0]);
+            if (formattedOldFile) {
+              // console.log("oldfile h bhai: ", oldFile);
+              console.log("updating the old file...");
+              // alert("file is already available!");
+              const oldFileRef = doc(database.files, formattedOldFile.id);
+              await updateDoc(oldFileRef, { url: fileURL });
+            } else {
+              console.log("ab new file create kr rha hu bhai!");
+              const fileDocRef = await addDoc(database.files, {
+                url: fileURL,
+                name: file.name,
+                fileSearchName: file.name.toLowerCase(),
+                folderId: currentFolder.id,
+                path: filePath,
+                userId: currentUser.uid,
+                type: file.type,
+                size: file.size,
+                createdAt: database.currentTimeStamp,
+              });
+            }
+
+            // rermoving the use of file uploading status whenever that file uploaded
+            setUploadingFiles((prevUploadingFiles) => {
+              return prevUploadingFiles.filter((uploadFile) => {
+                return uploadFile.id !== uploadId;
+              });
             });
+            uplodedFiles.push(file.name);
           }
-
-          // rermoving the use of file uploading status whenever that file uploaded
-          setUploadingFiles((prevUploadingFiles) => {
-            return prevUploadingFiles.filter((uploadFile) => {
-              return uploadFile.id !== uploadId;
-            });
-          });
-        }
+        );
+        // console.log(promices);
+      });
+      handleShowToast(`uploading ${promices?.length}`, "success");
+    } catch (error) {
+      console.log(error);
+      alert(`failed to upload ${promices?.length - uploadableFiles?.length}`);
+      handleShowToast(
+        `failed to upload ${promices?.length - uploadableFiles?.length}`,
+        "failure"
       );
-      // console.log(promices);
-    });
-
-    // const filePath =
-    //   currentFolder === ROOT_FOLDER
-    //     ? `${currentFolder.path.join("/")}/${file.name}`
-    //     : `${currentFolder.path.map((item) => item.name).join("/")}/${
-    //         currentFolder.name
-    //       }/${file.name}`;
-
-    // const filesFolderRef = ref(
-    //   storage,
-    //   `/files/${currentUser.uid}/${filePath}`
-    // );
-    // console.log("ja rha h...");
-
-    // const uploadTask = uploadBytesResumable(filesFolderRef, file);
-    // console.log("reply from server: ", uploadTask);
-
-    // uploadTask.on(
-    //   "state_changed",
-    //   (snapshot) => {
-    //     const progress =
-    //       (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //     setUploadingFiles((prevUploadingFiles) => {
-    //       return prevUploadingFiles.map((uploadFile) => {
-    //         if (uploadFile.id === id) {
-    //           return { ...uploadFile, progress: progress };
-    //         }
-    //         return uploadFile;
-    //       });
-    //     });
-    //   },
-    //   (err) => {
-    //     setUploadingFiles((prevUploadingFiles) => {
-    //       return prevUploadingFiles.map((uploadFile) => {
-    //         if (uploadFile.id === id) {
-    //           return { ...uploadFile, error: true };
-    //         }
-    //         return uploadFile;
-    //       });
-    //     });
-    //     console.log("Can't upload: ", err);
-    //   },
-    //   async () => {
-    //     //gettting the file URL
-    //     const fileURL = await getDownloadURL(uploadTask.snapshot.ref);
-
-    //     // updating the already available document using query
-    //     const q = query(
-    //       database.files,
-    //       where("name", "==", file.name),
-    //       where("userId", "==", currentUser.uid),
-    //       where("folderId", "==", currentFolder.id)
-    //     );
-    //     console.log("yahan se ho rha h ");
-
-    //     const oldFilesRef = await getDocs(q);
-    //     const formattedOldFile = oldFilesRef.docs.map(formatter.formatDoc)[0];
-    //     console.log("formattedoldFile: ", formattedOldFile);
-    //     // console.log("oldfile: ", oldFile.docs.map(formatter.formatDoc)[0]);
-    //     if (formattedOldFile) {
-    //       // console.log("oldfile h bhai: ", oldFile);
-    //       console.log("updating the old file...");
-    //       // alert("file is already available!");
-    //       const oldFileRef = doc(database.files, formattedOldFile.id);
-    //       await updateDoc(oldFileRef, { url: fileURL });
-    //     } else {
-    //       console.log("ab new file create kr rha hu bhai!");
-    //       const fileDocRef = await addDoc(database.files, {
-    //         url: fileURL,
-    //         name: file.name,
-    //         folderId: currentFolder.id,
-    //         path: filePath,
-    //         userId: currentUser.uid,
-    //         type: file.type,
-    //         size: file.size,
-    //         createdAt: database.currentTimeStamp,
-    //       });
-    //     }
-
-    //     // rermoving the use of file uploading status whenever that file uploaded
-    //     setUploadingFiles((prevUploadingFiles) => {
-    //       // setfileUploadProgress(0);
-    //       return prevUploadingFiles.filter((uploadFile) => {
-    //         return uploadFile.id !== id;
-    //       });
-    //     });
-    //   }
-    // );
+    }
 
     setModelOpen(false);
-    handleShowToast(`uploading ${promices?.length}`, "success");
   };
 
   return (
@@ -235,7 +160,7 @@ const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
           bg-blue-600 text-white hover:bg-blue-700 
         flex justify-center items-center gap-1 rounded-xl shadow-md duration-300 font-semibold`}
       >
-        <AiFillFileAdd />
+        <LuFilePlus2 />
         <div className="hidden md:block text-lg b-2">File</div>
       </div>
 
@@ -254,14 +179,13 @@ const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="w-full relative transform overflow-hidden rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-950 dark:text-slate-50 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+              className="w-full relative transform overflow-hidden rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-950 dark:text-slate-50 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl"
             >
               {/* main content */}
               <div className="flex flex-col justify-center items-center gap-5 px-6 pb-4 pt-5 sm:p-6 sm:pb-4">
                 <h3 className="font-semibold text-xl">Upload your files</h3>
-                {/* <div className=""> */}
                 <div
-                  className={`w-full sm:w-96 h-44 flex justify-center items-center border-2 border-dashed ${
+                  className={`w-full sm:w-10/12 h-56 flex justify-center items-center border-2 border-dashed ${
                     Array.isArray(files) && files.length
                       ? "border-blue-600"
                       : "border-slate-600 dark:border-slate-300 "

@@ -39,13 +39,14 @@ const featuresList = [
 const Start = () => {
   return (
     <>
-      <div className="select-none w-full font-bold flex justify-center items-center gap-4 flex-col mt-10 text-5xl sm:text-6xl md:text-7xl">
+      <div className="select-none w-full font-bold flex justify-center items-center gap-3 sm:gap-5 flex-col mt-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
         <span className="bg-gradient-to-r from-red-500 to-blue-600 bg-clip-text text-transparent">
           Welcome, Dude
         </span>
-        <h1 className="dark:opacity-90"> Save And Protect Your Files </h1>
+        <h1 className="dark:opacity-90"> Save And Protect Your </h1>
+        <h1 >Files</h1>
       </div>
-      <div className="">
+      <div className="mt-12">
         <div className="flex items-center justify-center gap-8 sm:gap-12 my-10">
           <Link
             to={"/auth/signup"}

@@ -9,6 +9,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import { AiFillFolderAdd } from "react-icons/ai";
+import { TbFolderPlus } from "react-icons/tb";
 
 // creating schema using yup library for validation
 const newFolderSchema = yup.object().shape({
@@ -33,33 +34,37 @@ const AddFolderButton = ({ icon, currentFolder, mobileNav }) => {
   const { currentUser, handleShowToast } = useAuthContext();
 
   const handleFormikCreateFolder = async (values, onSubmitProps) => {
-    console.log(values);
-    console.log(currentFolder);
+    try {
+      if (currentFolder === null || currentFolder === undefined) return; //if currentfolder is null then return
 
-    if (currentFolder === null || currentFolder === undefined) return; //if currentfolder is null then return
+      // activate loader
+      setLoader(true);
 
-    // activate loader
-    setLoader(true);
+      //creating path for folder
+      const path = [...currentFolder.path];
+      if (currentFolder !== ROOT_FOLDER) {
+        path.push({ name: currentFolder.name, id: currentFolder.id });
+      }
 
-    //creating path for folder
-    const path = [...currentFolder.path];
-    if (currentFolder !== ROOT_FOLDER) {
-      path.push({ name: currentFolder.name, id: currentFolder.id });
+      // Creating folder in databse
+      await addDoc(database.folders, {
+        name: values.name,
+        folderSearchName: values.name.toLowerCase(),
+        userId: currentUser.uid,
+        parentId: currentFolder.id,
+        path: path,
+        createdAt: database.currentTimeStamp,
+      });
+
+      handleShowToast(`Folder ${values.name} created.`, "success");
+    } catch (error) {
+      console.log(error);
+      alert("Failed to create folder!");
+      handleShowToast(`Failed to create folder!`, "failure");
     }
-
-    // Creating folder in databse
-    const folderDocRef = await addDoc(database.folders, {
-      name: values.name,
-      userId: currentUser.uid,
-      parentId: currentFolder.id,
-      path: path,
-      createdAt: database.currentTimeStamp,
-    });
-    // console.log("Folder Created: ", folderDocRef);
     onSubmitProps.resetForm();
     setLoader(false);
     setModelOpen(false);
-    handleShowToast(`Folder ${values.name} created.`, "success");
   };
 
   return (
@@ -70,7 +75,7 @@ const AddFolderButton = ({ icon, currentFolder, mobileNav }) => {
           bg-blue-600 text-white hover:bg-blue-700 
         flex justify-center items-center gap-1 rounded-xl shadow-md duration-300 font-semibold`}
       >
-        <AiFillFolderAdd />
+        <TbFolderPlus />
 
         <div className="hidden md:block text-lg b-2">Folder</div>
       </button>
@@ -131,15 +136,22 @@ const AddFolderButton = ({ icon, currentFolder, mobileNav }) => {
                         />
 
                         {touched.name && (
-                          <p className="text-red-500 text-left text-sm mt-1">
+                          <motion.p
+                            initial={{ opacity: 0.5, y: "-3px" }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-slate-600 text-left text-sm mt-1"
+                          >
                             {touched.name && errors.name}
-                          </p>
+                          </motion.p>
                         )}
                       </div>
 
                       <button
                         type="submit"
-                        className="w-32 rounded-xl bg-blue-600 hover:bg-blue-700 duration-300 p-3 text-sm font-semibold leading-6 text-white shadow-lg"
+                        disabled={values.name ? false : true}
+                        className={`${
+                          values.name ? "cursor-pointer" : "cursor-not-allowed"
+                        } w-32 rounded-xl bg-blue-600 hover:bg-blue-700 duration-300 p-3 text-sm font-semibold leading-6 text-white shadow-lg`}
                       >
                         {loader ? "Creating..." : "Create"}
                       </button>

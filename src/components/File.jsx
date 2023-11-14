@@ -91,7 +91,7 @@ const File = ({ file, currentFolder }) => {
   };
 
   const handleDownload = () => {
-    handleShowToast("1 file deleted", "failure");
+    // handleShowToast("1 file deleted", "failure");
     // fetch(file.url, { mode: "no-cors" })
     //   .then((response) => response.blob())
     //   .then((blob) => {
@@ -141,7 +141,7 @@ const File = ({ file, currentFolder }) => {
 
   return (
     <>
-      <div className="flex flex-col gap-2 text-base p-2 pt-2.5 sm:p-2 sm:pt-3 md:p-4 rounded-xl lg:rounded-2xl bg-slate-50 dark:bg-slate-900 hover:bg-opacity-40 dark:hover:bg-slate-800 dark:shadow-none shadow-2xl hover:shadow-blue-300 cursor-pointer duration-200 ">
+      <div className="flex flex-col gap-2 text-base p-2 pt-2.5 sm:p-2 sm:pt-3 md:p-4 rounded-xl lg:rounded-2xl bg-slate-50 dark:bg-slate-900 focus:bg-opacity-40 md:hover:bg-opacity-40 md:dark:hover:bg-slate-800 dark:shadow-none shadow-2xl focus:shadow-blue-300 md:hover:shadow-blue-300 cursor-pointer duration-200 ">
         {/* file preview */}
         <div
           onClick={() => setFileModel(file)}
@@ -159,20 +159,6 @@ const File = ({ file, currentFolder }) => {
               className="h-full w-full object-contain"
             />
           ) : (
-            // </div>
-            //   iconDictionary.map((item, index) => {
-            //     if (file.type.startsWith(item.type)) {
-            //       return (
-            //         <div
-            //           key={index}
-            //           className="text-6xl md:text-8xl lg:text-9xl flex justify-center items-center"
-            //         >
-            //           {item.icon}
-            //         </div>
-            //       );
-            //     }
-            //   })
-
             <div className="text-6xl md:text-8xl lg:text-9xl flex justify-center items-center">
               {fileIcon}
             </div>
@@ -181,29 +167,26 @@ const File = ({ file, currentFolder }) => {
 
         <div className="flex gap-[2px] sm:gap-0.5 lg:gap-2 items-center justify-between">
           <div className="flex justify-start items-center gap-1">
-            {/* {iconDictionary.map((item, index) => {
-              if (file.type.startsWith(item.type)) {
-                return (
-                  <div
-                    key={index}
-                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl"
-                  >
-                    {item.icon}
-                  </div>
-                );
-              }
-            })} */}
             {/* file icon */}
             <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
               {fileIcon}
             </div>
-            {/* file name */}
+            {/* file name for desktop screen */}
             <div
               onClick={handleDownload}
-              className="text-xs sm:text-[12px] md:text-[14px] lg:text-base truncate duration-200"
+              className="hidden sm:block text-xs sm:text-[12px] md:text-[14px] lg:text-base truncate duration-200"
             >
               {file.name.length > 14
                 ? `${file.name.substring(0, 14)}...`
+                : file.name.toString()}
+            </div>
+            {/* file name for mobile screen */}
+            <div
+              onClick={handleDownload}
+              className="block sm:hidden text-xs sm:text-[12px] md:text-[14px] lg:text-base truncate duration-200"
+            >
+              {file.name.length > 11
+                ? `${file.name.substring(0, 11)}...`
                 : file.name.toString()}
             </div>
           </div>
@@ -211,9 +194,9 @@ const File = ({ file, currentFolder }) => {
             to={file.url}
             onClick={handleDownload}
             target="_blank"
-            className="p-0 md:p-0.5 lg:p-1 hover:text-blue-600 lg:bg-white lg:hover:bg-blue-600 lg:hover:text-white  lg:dark:bg-slate-700 lg:dark:hover:bg-blue-600 shadow-md rounded-md duration-200"
+            className="p-0.5 md:p-1 text-sm sm:text-base md:text-xl bg-slate-200 lg:hover:bg-slate-300 dark:bg-slate-700 lg:dark:hover:bg-slate-600 duration-200 shadow-md rounded-md"
           >
-            <HiOutlineDownload className="text-xl" />
+            <HiOutlineDownload />
           </Link>
         </div>
       </div>
@@ -261,7 +244,7 @@ const File = ({ file, currentFolder }) => {
                   {/* file details */}
                   <div className=" flex flex-col">
                     {/* file name */}
-                    <article className="flex gap-3 justify-start flex-col sm:flex-row p-1 border border-slate-900 rounded-lg my-1">
+                    <article className="flex gap-3 justify-start  flex-col sm:flex-row p-1">
                       <span className="w-full sm:w-32 font-bold text-left text-slate-500 dark:text-slate-300">
                         File Name:
                       </span>
@@ -270,7 +253,7 @@ const File = ({ file, currentFolder }) => {
                       </p>
                     </article>
                     {/* file createdAt */}
-                    <article className="flex gap-3 justify-start items-center flex-col sm:flex-row p-1 border border-slate-900 rounded-lg my-1">
+                    <article className="flex gap-3 justify-start items-center flex-col sm:flex-row p-1">
                       <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
                         Created Date:
                       </span>
@@ -279,7 +262,7 @@ const File = ({ file, currentFolder }) => {
                       </p>
                     </article>
                     {/* file size */}
-                    <article className="flex gap-3 justify-start items-center flex-col sm:flex-row  p-1 border border-slate-900 rounded-lg my-1">
+                    <article className="flex gap-3 justify-start items-center flex-col sm:flex-row  p-1">
                       <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
                         File Size:
                       </span>
@@ -288,7 +271,7 @@ const File = ({ file, currentFolder }) => {
                       </p>
                     </article>
                     {/* file type */}
-                    <article className="flex gap-3 justify-start items-center flex-col sm:flex-row p-1 border border-slate-900 rounded-lg my-1">
+                    <article className="flex gap-3 justify-start items-center flex-col sm:flex-row p-1">
                       <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
                         File Type:
                       </span>
@@ -297,7 +280,7 @@ const File = ({ file, currentFolder }) => {
                       </p>
                     </article>
                     {/* file path */}
-                    <article className="flex gap-3 justify-start flex-col sm:flex-row p-1 border border-slate-900 rounded-lg my-1">
+                    <article className="flex gap-3 justify-start flex-col sm:flex-row p-1">
                       <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
                         File Path:
                       </span>
