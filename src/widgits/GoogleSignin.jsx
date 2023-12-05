@@ -10,7 +10,7 @@ const GoogleSignin = ({ handleGoogleSignIn }) => {
       className="shadow-lg flex w-full justify-center items-center gap-3 rounded-lg p-3 outline-none border-none text-base font-semibold text-slate-600 hover:text-blue-600 bg-slate-50 hover:bg-slate-100 dark:text-slate-200 dark:bg-slate-950 dark:hover:text-blue-600 duration-300 "
     >
       <FcGoogle className="text-2xl " />
-      Login with google
+      Signin with google
     </button>
   );
 };

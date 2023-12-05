@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useFolder } from "../hooks/useFolder";
 import AddFolderButton from "../widgits/AddFolderButton";
 import AddFileButton from "../widgits/AddFileButton";
@@ -10,8 +10,12 @@ import FolderBreadCrumb from "../components/FolderBreadCrumb";
 import Loader from "../components/Loader";
 import { motion } from "framer-motion";
 import { FcOpenedFolder, FcFile } from "react-icons/fc";
+import { pageTitle } from "../utils";
+import Tooltip from "../widgits/Tooltip";
 
 const DashBoard = () => {
+  pageTitle("Home | Stasher");
+
   const { folderId } = useParams();
   const { state = {} } = useLocation();
 
@@ -24,15 +28,15 @@ const DashBoard = () => {
   return (
     <>
       {/* file manager nav */}
-      <div className="flex justify-between flex-col sm:flex-row items-center gap-4 sm:gap-2 mx-auto my-10">
+      <div className="flex justify-between w-full flex-col sm:flex-row items-center gap-4 sm:gap-2 mx-auto my-8">
         <FolderBreadCrumb currentFolder={folder} />
         <div className="w-full sm:w-28 md:w-44 flex flex-row justify-between sm:justify-center items-center ">
           <h4 className="sm:hidden text-lg pl-2 font-semibold text-slate-500 truncate">
             Always Ready for upload...
           </h4>
           <div className="flex items-center gap-2">
-            <AddFileButton currentFolder={folder} />
-            <AddFolderButton currentFolder={folder} />
+            <AddFileButton currentFolder={folder} button />
+            <AddFolderButton currentFolder={folder} button />
           </div>
         </div>
       </div>
@@ -57,7 +61,7 @@ const DashBoard = () => {
         <>
           {Array.isArray(childFolders) ? (
             <div className="flex flex-col justify-center items-center">
-              <FcOpenedFolder className="text-8xl opacity-50" />
+              <AddFolderButton currentFolder={folder} />
             </div>
           ) : (
             <div className="flex items-center justify-center">
@@ -82,7 +86,7 @@ const DashBoard = () => {
               <motion.div
                 layout
                 // transition={{ delay: 3 }}
-                initial={{ opacity: 0 }}
+                initial={{ opacity: 0.5 }}
                 animate={{ opacity: 1 }}
                 // transition={{ duration: 0.2 }}
                 key={childFile.id}
@@ -96,7 +100,8 @@ const DashBoard = () => {
         <>
           {Array.isArray(childFiles) ? (
             <div className="flex flex-col justify-center items-center">
-              <FcFile className="text-8xl opacity-50" />
+              {/* <FcFile className="text-8xl opacity-50" /> */}
+              <AddFileButton currentFolder={folder} />
             </div>
           ) : (
             <div className="flex items-center justify-center">

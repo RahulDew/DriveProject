@@ -1,37 +1,56 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { sendEmailVerification } from "firebase/auth";
+import { pageTitle } from "../utils";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
 const VerifyEmail = () => {
+  const [varificationEmailSent, setVarificationEmailSent] = useState(null);
   const { currentUser } = useAuthContext();
+
+  pageTitle("Verify Email | Stasher");
 
   const handleVerifyEmail = async () => {
     try {
       await sendEmailVerification(currentUser);
       alert("Email varification link is send to your email inbox");
+      setVarificationEmailSent({
+        status: "success",
+        message:
+          "Verification Email has been sent to your inbox verify and refresh this page!",
+      });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (error.code === "auth/too-many-requests") {
         // console.log("Too Many Verification Request try after sometime!");
-        alert("Too Many verification request try after sometime!");
+        alert("Too many verification request try after sometime!");
+        setVarificationEmailSent({
+          status: "error",
+          message: "Too many verification request try after sometime!",
+        });
       } else {
         alert("verification request failed try after sometime!");
+        setVarificationEmailSent({
+          status: "error",
+          message: "verification request failed try after sometime!",
+        });
       }
     }
   };
 
   return (
-    <div className="w-full flex justify-center items-center">
+    <div className=" w-full flex justify-center items-center">
       <div
-        className={` sm:mx-auto md:w-full mt-14 max-w-2xl flex flex-col justify-center items-center gap-7`}
+        className={`relative sm:mx-auto md:w-full mt-14 max-w-2xl flex flex-col justify-center items-center gap-7`}
       >
         <p className="text-center text-2xl sm:text-3xl tracking-tight text-slate-700 dark:text-slate-400 font-semibold break-all">
           Hey, {currentUser.email}
         </p>
 
         {/* Checking account is varified or not */}
-        {currentUser.emailVerified ? (
+        {currentUser?.emailVerified ? (
           <>
             <h2 className="text-center w-full sm:w-92 text-5xl sm:text-6xl font-bold dark:text-slate-200">
               Your Account is Varified
@@ -66,13 +85,28 @@ const VerifyEmail = () => {
                 {`noreply_at_stassher.firebaseapp.com_${currentUser.email}`}
               </span>
               . You need to verify your account email from your inbox to ensure
-              complete creation of your account and then hit refresh
+              complete creation of your account and then refresh this page.
             </p>
+
+            {varificationEmailSent && (
+              <motion.h2
+                layout
+                initial={{ y: "-2vh", opacity: 0.1 }}
+                animate={{ y: 0, opacity: 1 }}
+                className={`p-2 text-center font-semibold text-xl ${
+                  varificationEmailSent.status === "error"
+                    ? "text-red-600"
+                    : "text-blue-600"
+                } `}
+              >
+                {varificationEmailSent?.message}
+              </motion.h2>
+            )}
 
             <button
               type="submit"
               onClick={handleVerifyEmail}
-              className="shadow-lg text-center text-base sm:text-lg m-auto w-40 sm:w-48 justify-center gap-2 rounded-full p-2 py-4 sm:p-5 outline-none border-none font-semibold bg-blue-600 text-white focus:bg-blue-700 hover:bg-blue-700 duration-300"
+              className="shadow-lg text-center text-base sm:text-lg m-auto w-40 sm:w-48 justify-center gap-2 rounded-full p-2 py-4 sm:p-5 outline-none border-none font-semibold bg-blue-600 text-white focus:bg-blue-700 hover:bg-blue-700 duration-200"
             >
               Verify Your Email
             </button>

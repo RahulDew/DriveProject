@@ -39,23 +39,20 @@ const Toast = ({ toast, removeToast }) => {
     }
   });
 
-  // console.log(toastIconColor);
-  // console.log(toastIcon);
 
   return (
     <motion.div
       layout
       initial={{ scale: 0, opacity: 0.2 }}
       animate={{ scale: 1, opacity: 1 }}
-      className="z-10 w-64 md:w-72 lg:w-96 flex items-center p-2 text-slate-500 bg-white rounded-xl shadow-lg dark:text-gray-400 dark:bg-slate-900 "
+      className="w-64 md:w-72 lg:w-96 flex items-center p-2 text-slate-700 bg-white dark:text-gray-400 dark:bg-slate-900 rounded-xl shadow-lg "
     >
       <div
-        className={`text-xl inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-${toastIconColor}-500 bg-${toastIconColor}-100 rounded-lg dark:text-${toastIconColor}-300  dark:bg-${toastIconColor}-900 dark:bg-opacity-50`}
+        className={`text-xl inline-flex items-center justify-center flex-shrink-0 bg-slate-200 dark:bg-slate-700 w-8 h-8 text-${toastIconColor}-500 bg-${toastIconColor}-100 rounded-lg dark:text-${toastIconColor}-300  dark:bg-${toastIconColor}-900 dark:bg-opacity-50`}
       >
         {toastIcon}
-        {/* <span className="sr-only">Fire icon</span> */}
       </div>
-      <div className="ml-3 text-sm font-normal">{toast.message}</div>
+      <div className="ml-3 text-sm font-normal break-all">{toast.message}</div>
       <button
         onClick={() => removeToast(toast.id)}
         type="button"

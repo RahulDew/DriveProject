@@ -36,19 +36,12 @@ const initialFileSearchValues = {
   fileName: "",
 };
 
-const FileSearch = ({
-  contentLoading,
-  setContentLoading,
-  isSearching,
-  setIsSearching,
-  currentUser,
-}) => {
+const FileSearch = ({ contentLoading, setContentLoading, currentUser }) => {
+  const [isSearching, setIsSearching] = useState(false);
   const [searchedFiles, setSearchedFiles] = useState([]);
 
-  //   console.log(searchedFiles);
-
   const handleFormikFileSearch = async (values, onSubmitProps) => {
-    console.log(values);
+    // console.log(values);
     // console.log(values.fileName.toLowerCase());
     setIsSearching(true);
     const q = query(
@@ -58,10 +51,10 @@ const FileSearch = ({
       where("fileSearchName", "<=", values.fileName.toLowerCase() + "\uf8ff")
     );
     setContentLoading(true);
-    console.log("bhai main usi name ke files la rha hu");
+    // console.log("bhai main usi name ke files la rha hu");
     onSnapshot(q, (snapshot) => {
       const files = snapshot.docs.map(formatter.formatDoc);
-      console.log("files: ", files);
+      // console.log("files: ", files);
       setSearchedFiles(files);
       setContentLoading(false);
     });
@@ -69,11 +62,7 @@ const FileSearch = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0.5, y: "-1vw" }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full"
-    >
+    <div className="w-full">
       <Formik
         onSubmit={handleFormikFileSearch}
         initialValues={initialFileSearchValues}
@@ -126,20 +115,18 @@ const FileSearch = ({
               )}
             </div>
             {/* fileName input error */}
-            {touched.fileName && (
-              <motion.p
-                initial={{ opacity: 0.5, y: "-3px" }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-blue-500 text-left text-base duration-200 transition-all"
-              >
-                {touched.fileName && errors.fileName}
-              </motion.p>
-            )}
+            <motion.p
+              initial={{ opacity: 0.5, y: "-3px" }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-blue-500 text-left text-base duration-200 transition-all"
+            >
+              {touched.fileName && errors.fileName}
+            </motion.p>
           </form>
         )}
       </Formik>
 
-      <hr className="font-bold border-slate-300 dark:border-slate-800 my-8 duration-200" />
+      <hr className="font-bold border-slate-300  dark:border-slate-800 my-8 duration-200" />
 
       {/* logic for showing files starts here */}
       {isSearching ? (
@@ -188,7 +175,7 @@ const FileSearch = ({
           </div>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

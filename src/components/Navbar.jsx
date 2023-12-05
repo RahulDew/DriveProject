@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+
 import { FiUploadCloud, FiMoon, FiSun } from "react-icons/fi";
 
 import SideNav from "./SideNav";
 import UploadingFileCard from "../widgits/UploadingFileCard";
+// import DropdownOptions from
+import DropdownOption from "../widgits/DropdownOption";
 import { motion } from "framer-motion";
-import Logo from "./logo";
-
+import { useLocation } from "react-router-dom";
+import { BiLogOut } from "react-icons/bi";
 const Navbar = () => {
   const [showUploadings, setShowUploadings] = useState(false);
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const [logoutWarning, setLogoutWarning] = useState(null);
 
   const Navigate = useNavigate();
+  const location = useLocation();
 
   const {
     logOut,
@@ -22,15 +26,14 @@ const Navbar = () => {
     handleToggleDarkMode,
     darkMode,
   } = useAuthContext();
-  // console.log(currentUser);
 
   const handleLogout = async () => {
     try {
       await logOut();
-      console.log("LoggedOut");
+      // console.log("LoggedOut");
       Navigate("auth/login", { replace: true });
     } catch (error) {
-      console.log("Can't get logged out");
+      // console.log("Can't get logged out");
     }
   };
 
@@ -138,16 +141,24 @@ const Navbar = () => {
 
         {/* profile image with profile route */}
         <Link to={"/profile"} className="hidden sm:block">
-          <div className="m-auto h-11 w-11 flex items-center justify-center cursor-pointer bg-slate-800 rounded-2xl shadow-md">
+          <div
+            className={`m-auto h-11 w-11 flex items-center justify-center cursor-pointer bg-slate-50 dark:bg-slate-800 border-2 hover:border-blue-600 ${
+              location.pathname.toLowerCase().includes("profile")
+                ? "border-blue-600"
+                : "border-transparent"
+            }  rounded-2xl shadow-md duration-200`}
+          >
             {currentUser?.photoURL ? (
               <img
                 src={currentUser.photoURL}
                 alt="Profile"
-                className="object-cover h-full w-full rounded-2xl"
+                className="object-cover h-full w-full rounded-[15px]"
               />
             ) : (
               <span className="text-xl font-bold text-white pb-1">
-                {currentUser.displayName[0].toUpperCase()}
+                {currentUser.displayName
+                  ? currentUser.displayName[0].toUpperCase()
+                  : currentUser.email[0].toUpperCase()}
               </span>
             )}
           </div>
@@ -178,7 +189,11 @@ const Navbar = () => {
         {/* currentuser profile image */}
         <div
           onClick={() => setToggleDropdown((prev) => !prev)}
-          className="m-auto w-10 h-10 flex items-center justify-center cursor-pointer bg-slate-800 rounded-xl shadow-md"
+          className={`m-auto w-10 h-10 flex items-center justify-center cursor-pointer bg-slate-800 rounded-xl shadow-md ${
+            location.pathname.toLowerCase().includes("profile")
+              ? "border-2 border-blue-600"
+              : "border-none"
+          }`}
         >
           {currentUser?.photoURL ? (
             <img
@@ -188,56 +203,26 @@ const Navbar = () => {
             />
           ) : (
             <span className="text-xl font-bold text-white pb-0.5">
-              {currentUser.displayName[0].toUpperCase()}
+              {currentUser?.displayName
+                ? currentUser.displayName[0].toUpperCase()
+                : currentUser.email[0].toUpperCase()}
             </span>
           )}
         </div>
         {toggleDropdown && (
-          <motion.div
-            layout
-            initial={{ y: "-2vh" }}
-            animate={{ y: 0 }}
-            className="z-10 absolute right-0 top-full mt-3 w-full p-3 rounded-xl shadow-lg bg-slate-50 dark:bg-slate-800 min-w-[11rem] flex flex-col gap-2 justify-end items-end"
-          >
-            {/* darkmode toggler */}
-            <button
-              className="bg-slate-300 dark:bg-slate-700  w-full text-base text-slate-950 dark:text-slate-50 p-3 font-semibold rounded-full"
-              onClick={() => {
-                setToggleDropdown(false);
-                handleToggleDarkMode();
-              }}
-            >
-              {darkMode ? (
-                <div className=" flex items-center justify-center gap-1">
-                  <FiSun className="text-xl" />
-                  <span>Lightmode</span>
-                </div>
-              ) : (
-                <div className=" flex items-center justify-center gap-1">
-                  <FiMoon className="text-xl" />
-                  <span>Darkmode</span>
-                </div>
-              )}
-            </button>
-
-            {/* logout button */}
-            <button
-              type="button"
-              className="mt-2 font-bold bg-red-500 text-slate-50 text-base p-3 rounded-full w-full"
-              onClick={() => {
-                setToggleDropdown(false);
-                handleLogoutWarning();
-              }}
-            >
-              Log Out
-            </button>
-          </motion.div>
+          <DropdownOption
+            setToggleDropdown={setToggleDropdown}
+            handleToggleDarkMode={handleToggleDarkMode}
+            darkMode={darkMode}
+            handleLogoutWarning={handleLogoutWarning}
+            currentUser={currentUser}
+          />
         )}
       </div>
 
       {/* <!-- drawer component --> */}
       {showUploadings && (
-        <div className="fixed inset-0 z-20 overflow-y-auto ">
+        <div className="fixed inset-0 z-20 overflow-y-auto no-scrollbar">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
@@ -249,9 +234,9 @@ const Navbar = () => {
             animate={{ x: 0 }}
             className={`fixed top-0 right-0 bottom-0 z-20 w-52 sm:w-64 min-h-screen py-4 px-3 overflow-y-auto  ${
               !showUploadings && "transition-transform translate-x-full"
-            } backdrop-blur-sm bg-white dark:bg-slate-900 bg-opacity-70 dark:bg-opacity-60 text-slate-950 dark:text-slate-50 `}
+            } backdrop-blur-lg bg-[#c4d5e7] dark:bg-slate-900 bg-opacity-70 dark:bg-opacity-40 text-slate-950 dark:text-slate-50 `}
           >
-            <h5 className="text-lg font-bold  uppercase ">Uploading Files</h5>
+            <h5 className="text-lg font-bold uppercase">Uploading Files</h5>
 
             {Array.isArray(uploadingFiles) && uploadingFiles.length ? (
               <div className="z-20 my-5 flex justify-center text-center flex-col gap-3">

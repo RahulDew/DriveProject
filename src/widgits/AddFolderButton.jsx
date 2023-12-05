@@ -10,13 +10,14 @@ import * as yup from "yup";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import { AiFillFolderAdd } from "react-icons/ai";
 import { TbFolderPlus } from "react-icons/tb";
+import { LuFolder } from "react-icons/lu";
 
 // creating schema using yup library for validation
 const newFolderSchema = yup.object().shape({
   name: yup
     .string()
     .required("Please enter valid folder name")
-    // .max(20, "Folder name not greater then 20 characters!")
+    .max(25, "Folder name not greater then 25 characters!")
     .min(3, "Folder name should have atleast 3 characters!")
     .trim()
     .nonNullable(),
@@ -27,8 +28,8 @@ const initialFolderValues = {
   name: "",
 };
 
-const AddFolderButton = ({ icon, currentFolder, mobileNav }) => {
-  const [modelOpen, setModelOpen] = useState(false);
+const AddFolderButton = ({ currentFolder, button }) => {
+  const [isFoldermodelOpen, setIsFolderModelOpen] = useState(false);
   const [loader, setLoader] = useState(false);
 
   const { currentUser, handleShowToast } = useAuthContext();
@@ -58,33 +59,54 @@ const AddFolderButton = ({ icon, currentFolder, mobileNav }) => {
 
       handleShowToast(`Folder ${values.name} created.`, "success");
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       alert("Failed to create folder!");
       handleShowToast(`Failed to create folder!`, "failure");
     }
     onSubmitProps.resetForm();
     setLoader(false);
-    setModelOpen(false);
+    setIsFolderModelOpen(false);
   };
+
+  const folderKeyDownHandler = (e) => {
+    if (e.key === "Enter" && e.ctrlKey) setIsFolderModelOpen(true);
+  };
+
+  window.addEventListener("keydown", folderKeyDownHandler);
 
   return (
     <>
-      <button
-        onClick={() => setModelOpen(true)}
-        className={`cursor-pointer text-2xl p-2 
+      {button ? (
+        <button
+          onClick={() => setIsFolderModelOpen(true)}
+          className={`cursor-pointer text-2xl p-2 
           bg-blue-600 text-white hover:bg-blue-700 
         flex justify-center items-center gap-1 rounded-xl shadow-md duration-300 font-semibold`}
-      >
-        <TbFolderPlus />
+        >
+          <TbFolderPlus />
 
-        <div className="hidden md:block text-lg b-2">Folder</div>
-      </button>
+          <div className="hidden md:block text-lg b-2">Folder</div>
+        </button>
+      ) : (
+        <>
+          <p className="text-xl text-slate-400 dark:text-slate-500">
+            No Folders Available!
+          </p>
+          <div
+            onClick={() => setIsFolderModelOpen(true)}
+            className="w-40 sm:w-44 my-3 p-4 flex justify-center items-center flex-col gap-1 cursor-pointer rounded-2xl bg-slate-50 dark:bg-slate-900 bg-opacity-60 dark:bg-opacity-60 hover:dark:bg-opacity-60 hover:bg-opacity-60 sm:bg-transparent sm:dark:bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900 text-amber-400 md:hover:text-amber-500 duration-200"
+          >
+            <TbFolderPlus className="text-6xl sm:text-7xl cursor-pointer" />
+            <span className="text-sm sm:text-base">Create New Folders</span>
+          </div>
+        </>
+      )}
 
       {/* Add Folder or File Model */}
-      {modelOpen && (
-        <div className="fixed inset-0 z-10 overflow-y-auto ">
+      {isFoldermodelOpen && (
+        <div className="fixed inset-0 z-10 overflow-y-auto no-scrollbar">
           <div
-            onClick={() => setModelOpen(false)}
+            onClick={() => setIsFolderModelOpen(false)}
             className={
               "fixed inset-0 bg-gray-800 opacity-70 dark:bg-slate-950 dark:opacity-80 transition-opacity"
             }
@@ -96,7 +118,7 @@ const AddFolderButton = ({ icon, currentFolder, mobileNav }) => {
               className="w-full relative transform overflow-hidden rounded-2xl bg-white dark:bg-slate-900 text-slate-950 dark:text-slate-50 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
             >
               {/* main content */}
-              <div className="p-6 sm:p-6">
+              <div className="p-6">
                 <Formik
                   onSubmit={handleFormikCreateFolder}
                   initialValues={initialFolderValues}
@@ -135,15 +157,13 @@ const AddFolderButton = ({ icon, currentFolder, mobileNav }) => {
                           className="w-full rounded-lg p-2 text-[17px] outline-none text-slate-950 dark:text-slate-100 bg-transparent border-2 border-slate-500 focus:border-blue-600 focus:border-opacity-70 duration-200"
                         />
 
-                        {touched.name && (
-                          <motion.p
-                            initial={{ opacity: 0.5, y: "-3px" }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-slate-600 text-left text-sm mt-1"
-                          >
-                            {touched.name && errors.name}
-                          </motion.p>
-                        )}
+                        <motion.p
+                          initial={{ opacity: 0.5, y: "-3px" }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="text-slate-600 text-left text-sm mt-1"
+                        >
+                          {touched.name && errors.name}
+                        </motion.p>
                       </div>
 
                       <button
@@ -153,7 +173,33 @@ const AddFolderButton = ({ icon, currentFolder, mobileNav }) => {
                           values.name ? "cursor-pointer" : "cursor-not-allowed"
                         } w-32 rounded-xl bg-blue-600 hover:bg-blue-700 duration-300 p-3 text-sm font-semibold leading-6 text-white shadow-lg`}
                       >
-                        {loader ? "Creating..." : "Create"}
+                        {loader ? (
+                          <div className="flex justify-center items-center">
+                            <svg
+                              aria-hidden="true"
+                              role="status"
+                              className="inline w-4 h-4 me-3 text-white animate-spin"
+                              viewBox="0 0 100 101"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                fill=""
+                              />
+                              <path
+                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                            <span>Creating...</span>
+                          </div>
+                        ) : (
+                          <div className="flex justify-center items-center gap-1.5">
+                            <TbFolderPlus className="text-2xl"/>
+                            <span className="text-base">Create</span>
+                          </div>
+                        )}
                       </button>
                     </form>
                   )}

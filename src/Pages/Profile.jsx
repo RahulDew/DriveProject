@@ -11,12 +11,16 @@ import Loader from "../components/Loader";
 import { Link } from "react-router-dom";
 
 import { motion } from "framer-motion";
+import { pageTitle } from "../utils";
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [itemsCount, setItemsCount] = useState(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
 
-  const { currentUser, darkMode } = useAuthContext();
+  const { currentUser, darkMode, handleToggleDarkMode } = useAuthContext();
+
+  pageTitle("Profile | Stasher");
 
   const totalFilesFoldersCount = async () => {
     // getting info about totalFolderCount
@@ -43,22 +47,33 @@ const Profile = () => {
   );
 
   const getProfile = () => {
+    setIsProfileLoading(true);
     onSnapshot(profileQuery, (snapshot) => {
-      const userProfile = snapshot.docs.map(formatter.formatDoc)[0];
+      const userProfile = snapshot.docs.map(formatter.formatDoc);
       // console.log(userProfile);
-      setProfile(userProfile);
+      if (Array.isArray(userProfile) && userProfile.length) {
+        setProfile(userProfile[0]);
+      } else {
+        setProfile(null);
+      }
+      setIsProfileLoading(false);
     });
   };
 
   useEffect(() => {
     // getting total numbers of folders and total numbers of files from the server
     totalFilesFoldersCount();
+    // getting the profile document of the currentUser
     getProfile();
   }, []);
 
   return (
     <>
-      {profile && itemsCount ? (
+      {isProfileLoading ? (
+        <div className="my-80 sm:my-72 h-full flex items-center justify-center">
+          <Loader />
+        </div>
+      ) : (
         <motion.div
           initial={{ opacity: 0.5, y: "-1vw" }}
           animate={{ opacity: 1, y: 0 }}
@@ -72,11 +87,13 @@ const Profile = () => {
                 <img
                   src={currentUser.photoURL}
                   alt=""
-                  className="h-full w-full object-cover rounded-3xl shadow-xl"
+                  className="h-full w-full object-cover rounded-3xl shadow-xl dark:shadow-none focus:shadow-blue-300 md:hover:shadow-blue-300 duration-200 bg-slate-50 dark:bg-slate-800 "
                 />
               ) : (
-                <div className="bg-gradient-to-br text-slate-50 from-red-500 to-blue-600 shadow-xl h-full w-full flex justify-center items-center rounded-3xl text-7xl font-semibold">
-                  {currentUser.displayName[0].toUpperCase()}
+                <div className="select-none bg-gradient-to-tl text-slate-50 from-slate-900 to-blue-700 h-full w-full flex justify-center items-center text-8xl lg:text-9xl font-semibold rounded-3xl shadow-xl dark:shadow-none focus:shadow-blue-300 md:hover:shadow-blue-300 duration-200">
+                  {currentUser.displayName
+                    ? currentUser.displayName[0].toUpperCase()
+                    : currentUser.email[0].toUpperCase()}
                 </div>
               )}
             </div>
@@ -89,7 +106,9 @@ const Profile = () => {
                   <FcFolder className="text-5xl sm:text-6xl" />
                   <div>
                     <span className="font-bold text-xl sm:text-3xl text-blue-600">
-                      {itemsCount?.foldersCount.count}
+                      {itemsCount?.foldersCount
+                        ? itemsCount?.foldersCount.count
+                        : "..."}
                     </span>
                     <p className="text-xl font-semibold">Folders</p>
                   </div>
@@ -99,16 +118,21 @@ const Profile = () => {
                   <FcFile className="text-5xl sm:text-6xl" />
                   <div>
                     <span className="font-bold text-xl sm:text-3xl text-blue-600">
-                      {itemsCount?.filesCount.count}
+                      {itemsCount?.filesCount
+                        ? itemsCount?.filesCount.count
+                        : "..."}
                     </span>
                     <p className="text-xl font-semibold">Files</p>
                   </div>
                 </div>
               </div>
-
+              {/* options */}
               <div className="w-full flex justify-center items-center gap-3">
                 {/* email varified check */}
-                <Link to={"/auth/verifyEmail"} className="w-full lg:w-[16rem] xl:w-[18rem] h-[6rem] xl:h-[6.5rem] bg-slate-50 dark:bg-slate-800 shadow-xl dark:shadow-none duration-200 rounded-2xl m-auto flex justify-evenly items-center p-2 lg:p-10 gap-2 sm:gap-5">
+                <Link
+                  to={"/verifyEmail"}
+                  className="w-full lg:w-[16rem] xl:w-[18rem] h-[6rem] xl:h-[6.5rem] bg-slate-50 dark:bg-slate-800 shadow-xl dark:shadow-none focus:shadow-blue-300 md:hover:shadow-blue-300 duration-200 rounded-2xl m-auto flex justify-evenly items-center p-2 lg:p-10 gap-2 sm:gap-5"
+                >
                   {currentUser?.emailVerified ? (
                     <MdVerifiedUser className="text-5xl sm:text-6xl text-emerald-500" />
                   ) : (
@@ -120,7 +144,10 @@ const Profile = () => {
                   </div>
                 </Link>
                 {/* dark mode check */}
-                <div className="w-full lg:w-[16rem] xl:w-[18rem] h-[6rem] xl:h-[6.5rem] bg-slate-50 dark:bg-slate-800 shadow-xl dark:shadow-none duration-200 rounded-2xl m-auto flex justify-evenly items-center p-2 lg:p-10 gap-2 sm:gap-5">
+                <div
+                  onClick={handleToggleDarkMode}
+                  className="cursor-pointer w-full lg:w-[16rem] xl:w-[18rem] h-[6rem] xl:h-[6.5rem] bg-slate-50 dark:bg-slate-800 shadow-xl dark:shadow-none focus:shadow-blue-300 md:hover:shadow-blue-300 duration-200 rounded-2xl m-auto flex justify-evenly items-center p-2 lg:p-10 gap-2 sm:gap-5"
+                >
                   {darkMode ? (
                     <FaToggleOn className="text-5xl sm:text-6xl text-blue-600" />
                   ) : (
@@ -170,7 +197,7 @@ const Profile = () => {
                 Want to update profile:
               </span>
               <Link
-                to={"/auth/updateProfile"}
+                to={"/updateProfile"}
                 className="w-32 ml-5 text-[17px] rounded-xl font-semibold text-white bg-blue-600 p-2 cursor-pointer hover:bg-blue-700 duration-300"
               >
                 Update
@@ -178,10 +205,6 @@ const Profile = () => {
             </div>
           </div>
         </motion.div>
-      ) : (
-        <div className="my-80 sm:my-72 h-full flex items-center justify-center">
-          <Loader />
-        </div>
       )}
     </>
   );

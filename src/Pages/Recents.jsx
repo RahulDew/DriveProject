@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { query, where, onSnapshot } from "firebase/firestore";
 import { database } from "../config/firebase";
 import { formatter } from "../config/firebase";
+import { pageTitle } from "../utils";
 // import { Timestamp } from "firebase/firestore";
 
 const recentFilesTimeStamps = [
@@ -29,6 +30,8 @@ const Recents = () => {
 
   //getting allFiles State
   const { currentUser } = useAuthContext();
+
+  pageTitle("Recents | Stasher");
 
   const currentDate = new Date(); //getting the current date
   // console.log(currentDate);

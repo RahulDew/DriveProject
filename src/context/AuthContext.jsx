@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { useContext } from "react";
 import { auth, googleProvider } from "../config/firebase";
-import { sendEmailVerification, updateProfile } from "firebase/auth";
+import { updateProfile } from "firebase/auth";
 import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
 
   // for toast notification
   const [toasts, setToasts] = useState([]);
-  // const [autoCloseDuration, setAutoCloseDuration] = useState(5);
 
   const signUp = async (email, password) => {
     const { user } = await createUserWithEmailAndPassword(
@@ -34,9 +33,9 @@ export const AuthProvider = ({ children }) => {
       email,
       password
     );
-    // await updateProfile(auth.currentUser, {
-    //   displayName: email.split("@")[0],
-    // });
+    await updateProfile(auth.currentUser, {
+      displayName: email.split("@")[0],
+    });
     return user;
   };
 
@@ -55,12 +54,9 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = (email) => {
     return sendPasswordResetEmail(auth, email);
   };
-  const updatePassword = (password) => {
-    return currentUser.updatePassword(password);
-  };
 
   const handleToggleDarkMode = () => {
-    setDarkMode(!darkMode);
+    setDarkMode((prevDarkMode) => !prevDarkMode);
   };
 
   const handleAuthError = (message) => {
@@ -120,7 +116,6 @@ export const AuthProvider = ({ children }) => {
     logIn,
     logOut,
     resetPassword,
-    updatePassword,
     signInWithGoogle,
     uploadingFiles,
     setUploadingFiles,
@@ -131,7 +126,6 @@ export const AuthProvider = ({ children }) => {
     contentLoading,
     setContentLoading,
     darkMode,
-    setDarkMode,
     handleToggleDarkMode,
     toasts,
     handleShowToast,

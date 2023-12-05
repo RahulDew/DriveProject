@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext";
 import AuthNav from "../components/Auth/AuthNav";
 const Auth = () => {
-  const [darkMode, setDarkMode] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
+  const { handleToggleDarkMode, darkMode } = useAuthContext();
   return (
     <div className={`${darkMode ? "dark" : ""}`}>
       <div
@@ -12,10 +11,14 @@ const Auth = () => {
       >
         <div className="fixed special_gradient"></div>
         <div className="z-40 w-full text-black dark:text-slate-100">
-          <AuthNav darkMode={darkMode} setDarkMode={setDarkMode} />
+          <AuthNav
+            darkMode={darkMode}
+            handleToggleDarkMode={handleToggleDarkMode}
+          />
 
           {/* rendering the child components */}
           <Outlet />
+          {/* <footer className="absolute bottom-0 m-auto text-center">Stasher © 2023</footer> */}
         </div>
       </div>
     </div>

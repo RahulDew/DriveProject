@@ -3,15 +3,10 @@ import { doc, deleteDoc } from "firebase/firestore";
 import { database, db } from "../config/firebase";
 import { ref, deleteObject } from "firebase/storage";
 import { storage } from "../config/firebase";
-import { ROOT_FOLDER } from "../hooks/useFolder";
 import { useAuthContext } from "../context/AuthContext";
 
 import { motion } from "framer-motion";
 import { MdClose } from "react-icons/md";
-import downloadFile from "../utils";
-import { BiDotsVerticalRounded } from "react-icons/bi";
-import { getDownloadURL } from "firebase/storage";
-import { getStorage } from "firebase/storage";
 
 import {
   FcImageFile,
@@ -28,7 +23,10 @@ import {
   FcAnswers,
   FcFile,
 } from "react-icons/fc";
-import { MdDelete, MdDownload } from "react-icons/md";
+import { MdDeleteOutline } from "react-icons/md";
+import { PiShareFat } from "react-icons/pi";
+import { BsCheck2Circle } from "react-icons/bs";
+
 import { HiOutlineDownload } from "react-icons/hi";
 import { Link } from "react-router-dom";
 
@@ -71,6 +69,7 @@ const iconDictionary = [
 
 const File = ({ file, currentFolder }) => {
   const [fileModel, setFileModel] = useState(null);
+  const [copiedLink, setCopiedLink] = useState("");
   const { currentUser, handleShowToast } = useAuthContext();
 
   //handeling the delete functionality
@@ -86,49 +85,18 @@ const File = ({ file, currentFolder }) => {
     );
     // console.log(storageFileref);
     await deleteObject(storageFileref);
-    console.log("ho gye file delete storage se...");
+    // console.log("ho gye file delete storage se...");
     handleShowToast("1 file deleted", "failure");
   };
 
+  const handleCopyShareLink = (url) => {
+    setCopiedLink(file.url);
+    navigator.clipboard.writeText(file.url);
+    setTimeout(() => setCopiedLink(false), 3000);
+  };
+
   const handleDownload = () => {
-    // handleShowToast("1 file deleted", "failure");
-    // fetch(file.url, { mode: "no-cors" })
-    //   .then((response) => response.blob())
-    //   .then((blob) => {
-    //     const blobUrl = window.URL.createObjectURL(new Blob([blob]));
-    //     const aTag = document.createElement("a");
-    //     aTag.href = blobUrl;
-    //     aTag.setAttribute("download", file.name);
-    //     document.body.appendChild(aTag);
-    //     aTag.click();
-    //     aTag.remove();
-    //   });
-    // console.log(file);
-    // const response = await fetch(file.url);
-    // const data = await response.blob();
-    // console.log(response);
-    // console.log(data);
-    // console.log("file is downloaded...");
-    // console.log(file.id);
-    // console.log(file);
-    // const filePath =
-    //   currentFolder === ROOT_FOLDER
-    //     ? `${currentFolder.path.join("/")}/${file.name}`
-    //     : `${currentFolder.path.map((item) => item.name).join("/")}/${
-    //         currentFolder.name
-    //       }/${file.name}`;
-    // const filesFolderRef = ref(
-    //   storage,
-    //   `/files/${currentUser.uid}/${filePath}`
-    // );
-    // console.log(filesFolderRef);
-    // getDownloadURL(filesFolderRef)
-    //   .then((downloadUrl) => console.log(downloadUrl))
-    //   .catch((error) => console.log(error));
-    // // trying with bucket
-    // const fileee = getStorage().bucket("my-custom-bucket").file(filesFolderRef);
-    // const publicUrl = await getDownloadURL(fileee);
-    // console.log(publicUrl);
+    // handleShowToast("bingo", "warning");
   };
 
   let fileIcon = <FcFile />;
@@ -152,7 +120,7 @@ const File = ({ file, currentFolder }) => {
             <motion.img
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
+              transition={{ delay: 2 }}
               src={file.url}
               alt={file.name}
               loading="lazy"
@@ -165,26 +133,22 @@ const File = ({ file, currentFolder }) => {
           )}
         </div>
 
-        <div className="flex gap-[2px] sm:gap-0.5 lg:gap-2 items-center justify-between">
+        <div
+          className="flex gap-[2px] sm:gap-0.5 lg:gap-2 items-center justify-between"
+        >
           <div className="flex justify-start items-center gap-1">
             {/* file icon */}
             <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
               {fileIcon}
             </div>
             {/* file name for desktop screen */}
-            <div
-              onClick={handleDownload}
-              className="hidden sm:block text-xs sm:text-[12px] md:text-[14px] lg:text-base truncate duration-200"
-            >
+            <div className="hidden sm:block text-xs sm:text-[12px] md:text-[14px] lg:text-base truncate duration-200">
               {file.name.length > 14
                 ? `${file.name.substring(0, 14)}...`
                 : file.name.toString()}
             </div>
             {/* file name for mobile screen */}
-            <div
-              onClick={handleDownload}
-              className="block sm:hidden text-xs sm:text-[12px] md:text-[14px] lg:text-base truncate duration-200"
-            >
+            <div className="block sm:hidden text-xs sm:text-[12px] md:text-[14px] lg:text-base truncate duration-200">
               {file.name.length > 11
                 ? `${file.name.substring(0, 11)}...`
                 : file.name.toString()}
@@ -192,7 +156,6 @@ const File = ({ file, currentFolder }) => {
           </div>
           <Link
             to={file.url}
-            onClick={handleDownload}
             target="_blank"
             className="p-0.5 md:p-1 text-sm sm:text-base md:text-xl bg-slate-200 lg:hover:bg-slate-300 dark:bg-slate-700 lg:dark:hover:bg-slate-600 duration-200 shadow-md rounded-md"
           >
@@ -203,7 +166,7 @@ const File = ({ file, currentFolder }) => {
 
       {/* File viewer */}
       {fileModel && (
-        <div className="fixed inset-0 z-50 overflow-y-auto ">
+        <div className="fixed inset-0 z-50 overflow-y-auto no-scrollbar">
           <div
             className="fixed inset-0 bg-gray-800 h-screen opacity-70 transition-opacity"
             onClick={() => setFileModel(null)}
@@ -245,7 +208,7 @@ const File = ({ file, currentFolder }) => {
                   <div className=" flex flex-col">
                     {/* file name */}
                     <article className="flex gap-3 justify-start  flex-col sm:flex-row p-1">
-                      <span className="w-full sm:w-32 font-bold text-left text-slate-500 dark:text-slate-300">
+                      <span className="w-full sm:w-32 font-bold text-left text-slate-500 dark:text-slate-400">
                         File Name:
                       </span>
                       <p className="w-full font-semibold text-slate-700 dark:text-slate-100 ">
@@ -254,7 +217,7 @@ const File = ({ file, currentFolder }) => {
                     </article>
                     {/* file createdAt */}
                     <article className="flex gap-3 justify-start items-center flex-col sm:flex-row p-1">
-                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
+                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-400">
                         Created Date:
                       </span>
                       <p className="w-full font-semibold text-slate-700 dark:text-slate-100">
@@ -263,7 +226,7 @@ const File = ({ file, currentFolder }) => {
                     </article>
                     {/* file size */}
                     <article className="flex gap-3 justify-start items-center flex-col sm:flex-row  p-1">
-                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
+                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-400">
                         File Size:
                       </span>
                       <p className="w-full font-semibold text-slate-700 dark:text-slate-100">
@@ -272,7 +235,7 @@ const File = ({ file, currentFolder }) => {
                     </article>
                     {/* file type */}
                     <article className="flex gap-3 justify-start items-center flex-col sm:flex-row p-1">
-                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
+                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-400">
                         File Type:
                       </span>
                       <p className="w-full font-semibold text-slate-700 dark:text-slate-100">
@@ -281,7 +244,7 @@ const File = ({ file, currentFolder }) => {
                     </article>
                     {/* file path */}
                     <article className="flex gap-3 justify-start flex-col sm:flex-row p-1">
-                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-300">
+                      <span className="w-full sm:w-32 font-bold  text-slate-500 dark:text-slate-400">
                         File Path:
                       </span>
                       <p className="w-full font-semibold text-slate-700 dark:text-slate-100 ">
@@ -301,26 +264,36 @@ const File = ({ file, currentFolder }) => {
                         <MdClose />
                       </div>
                     </button>
-                    {/* file download */}
-                    <Link
-                      to={fileModel.url}
-                      target="_blank"
-                      className="w-10 h-10 cursor-pointer flex justify-center items-center gap-2 text-white bg-blue-500 hover:bg-blue-600 p-2 px-3 rounded-xl shadow-md duration-300"
-                    >
-                      {/* <span className="font-semibold text-base">Download</span> */}
-                      <div className="text-xl">
-                        <MdDownload />
-                      </div>
-                    </Link>
+                    {/* Share File Link*/}
+                    <div className="group relative">
+                      <button
+                        onClick={handleCopyShareLink}
+                        className="w-10 h-10 cursor-pointer flex justify-center items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 p-2 px-3 rounded-xl shadow-md duration-300"
+                      >
+                        <div className="text-xl duration-200 font-bold">
+                          {copiedLink ? <BsCheck2Circle /> : <PiShareFat />}
+                        </div>
+                      </button>
+                      {copiedLink && (
+                        <motion.span
+                          layout
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="text-center text-sm text-white bg-blue-600 font-semibold p-2 rounded-xl pointer-events-none absolute top-12 -left-3 sm:-left-20 sm:right-11 sm:-top-2 "
+                        >
+                          Link Copied!
+                        </motion.span>
+                      )}
+                    </div>
 
                     {/* file delete */}
                     <button
                       onClick={() => handleDelete(fileModel.id, fileModel.path)}
-                      className="w-10 h-10 cursor-pointer flex justify-center items-center gap-2 text-white bg-rose-500 hover:bg-rose-600 p-2 rounded-xl shadow-md duration-300"
+                      className="w-10 h-10 cursor-pointer flex justify-center items-center gap-2 text-white bg-rose-600 hover:bg-rose-700 p-2 rounded-xl shadow-md duration-300"
                     >
                       {/* <span className="font-semibold text-sm">Delete</span> */}
                       <div className="text-xl">
-                        <MdDelete />
+                        <MdDeleteOutline />
                       </div>
                     </button>
                   </div>

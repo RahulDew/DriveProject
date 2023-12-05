@@ -29,19 +29,12 @@ const initialFolderSearchValues = {
   folderName: "",
 };
 
-const FolderSearch = ({
-  contentLoading,
-  setContentLoading,
-  isSearching,
-  setIsSearching,
-  currentUser,
-}) => {
+const FolderSearch = ({ contentLoading, setContentLoading, currentUser }) => {
+  const [isSearching, setIsSearching] = useState(false);
   const [searchedFolders, setSearchedFolders] = useState([]);
 
-  // console.log(searchedFolders);
-
   const handleFormikFolerSearch = async (values, onSubmitProps) => {
-    console.log(values);
+    // console.log(values);
     // console.log(values.fileName.toLowerCase());
     setIsSearching(true);
     const q = query(
@@ -55,10 +48,10 @@ const FolderSearch = ({
       )
     );
     setContentLoading(true);
-    console.log("bhai main usi name ke folders la rha hu");
+    // console.log("bhai main usi name ke folders la rha hu");
     onSnapshot(q, (snapshot) => {
       const folders = snapshot.docs.map(formatter.formatDoc);
-      console.log(folders);
+      // console.log(folders);
       setSearchedFolders(folders);
     });
     setContentLoading(false);
@@ -66,11 +59,7 @@ const FolderSearch = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0.5, y: "-1vw" }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full"
-    >
+    <motion.div className="w-full">
       <Formik
         onSubmit={handleFormikFolerSearch}
         initialValues={initialFolderSearchValues}
@@ -123,15 +112,13 @@ const FolderSearch = ({
               )}
             </div>
             {/* folderName input error */}
-            {touched.folderName && (
-              <motion.p
-                initial={{ opacity: 0.5, y: "-3px" }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-blue-500 text-left text-base duration-200 transition-all"
-              >
-                {touched.folderName && errors.folderName}
-              </motion.p>
-            )}
+            <motion.p
+              initial={{ opacity: 0.5, y: "-3px" }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-blue-500 text-left text-base duration-200 transition-all"
+            >
+              {touched.folderName && errors.folderName}
+            </motion.p>
           </form>
         )}
       </Formik>

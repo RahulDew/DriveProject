@@ -4,6 +4,7 @@ import { useAuthContext } from "../context/AuthContext";
 
 import FileSearch from "../components/FileSearch";
 import FolderSearch from "../components/FolderSearch";
+import { pageTitle } from "../utils";
 
 const SearchIntro = ({ isFileSearch, setIsFileSearch }) => {
   return (
@@ -59,15 +60,16 @@ const SearchIntro = ({ isFileSearch, setIsFileSearch }) => {
 };
 
 const Search = () => {
-  const [isSearching, setIsSearching] = useState(false);
   const [isFileSearch, setIsFileSearch] = useState(true);
   const [contentLoading, setContentLoading] = useState(false);
 
   const { currentUser } = useAuthContext();
 
+  pageTitle("Search | Stasher");
+
   return (
     <div
-      className={`sm:px-5 h-full w-full flex flex-col justify-center items-center gap-5`}
+      className={`sm:px-5 mt-5 h-full w-full flex flex-col justify-center items-center gap-5`}
     >
       {/* Search intro component */}
 
@@ -81,8 +83,6 @@ const Search = () => {
         <FileSearch
           contentLoading={contentLoading}
           setContentLoading={setContentLoading}
-          isSearching={isSearching}
-          setIsSearching={setIsSearching}
           currentUser={currentUser}
         />
       ) : (
@@ -90,8 +90,6 @@ const Search = () => {
         <FolderSearch
           contentLoading={contentLoading}
           setContentLoading={setContentLoading}
-          isSearching={isSearching}
-          setIsSearching={setIsSearching}
           currentUser={currentUser}
         />
       )}

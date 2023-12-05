@@ -2,13 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FiMoon, FiSun } from "react-icons/fi";
 
-const AuthNav = ({ darkMode, setDarkMode }) => {
-  const handleChangeDarkMode = () => {
-    setDarkMode((prev) => !prev);
-  };
+const AuthNav = ({ darkMode, handleToggleDarkMode }) => {
+  // const handleChangeDarkMode = () => {
+  //   setDarkMode((prev) => !prev);
+  // };
   return (
     <div className="flex justify-between items-center">
-      <Link to={"/"} className="flex items-center justify-center gap-3">
+      <Link to={"/"} className="flex items-center justify-center sm:gap-3">
         <svg
           width="42"
           height="42"
@@ -52,11 +52,7 @@ const AuthNav = ({ darkMode, setDarkMode }) => {
               y2="55.5"
               gradientUnits="userSpaceOnUse"
             >
-              <stop
-                offset="0.497754"
-                stopColor="#F81111"
-                stopOpacity="0.98"
-              />
+              <stop offset="0.497754" stopColor="#F81111" stopOpacity="0.98" />
               <stop offset="1" stopColor="#00058A" stopOpacity="0" />
             </linearGradient>
             <clipPath id="clip0_108_2">
@@ -67,7 +63,7 @@ const AuthNav = ({ darkMode, setDarkMode }) => {
         <h2 className="text-3xl font-bold">Stasher</h2>
       </Link>
       <div
-        onClick={handleChangeDarkMode}
+        onClick={handleToggleDarkMode}
         className="shadow-lg dark:shadow-none cursor-pointer p-2 bg-white text-slate-800 dark:bg-slate-700 dark:text-white w-10 h-10 flex justify-center items-center rounded-full text-2xl duration-200"
       >
         {darkMode ? <FiSun /> : <FiMoon />}

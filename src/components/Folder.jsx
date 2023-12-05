@@ -41,10 +41,10 @@ const Folder = ({ folder }) => {
   };
 
   const handleDeleteFolder = async (folderId) => {
-    console.log("deleting the folder...");
+    // console.log("deleting the folder...");
     const FolderRef = doc(database.folders, folder.id);
     await deleteDoc(FolderRef);
-    console.log("Folder is deleted...");
+    // console.log("Folder is deleted...");
     handleShowToast(`Folder '${folder.name}' deleted!`, "failure");
     setFolderModal(null);
   };
@@ -67,7 +67,7 @@ const Folder = ({ folder }) => {
       </div>
 
       {folderModal && (
-        <div className="fixed inset-0 z-40 overflow-y-auto ">
+        <div className="fixed inset-0 z-40 overflow-y-auto no-scrollbar">
           <div
             onClick={() => setFolderModal(null)}
             className={

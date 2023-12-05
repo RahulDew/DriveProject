@@ -7,6 +7,7 @@ import {
   FiFolder,
   FiImage,
 } from "react-icons/fi";
+import { pageTitle } from "../utils";
 
 const featuresList = [
   {
@@ -37,6 +38,8 @@ const featuresList = [
 ];
 
 const Start = () => {
+  pageTitle("Stasher - The Personal Drive");
+
   return (
     <>
       <div className="select-none w-full font-bold flex justify-center items-center gap-3 sm:gap-5 flex-col mt-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
@@ -44,7 +47,7 @@ const Start = () => {
           Welcome, Dude
         </span>
         <h1 className="dark:opacity-90"> Save And Protect Your </h1>
-        <h1 >Files</h1>
+        <h1>Files</h1>
       </div>
       <div className="mt-12">
         <div className="flex items-center justify-center gap-8 sm:gap-12 my-10">

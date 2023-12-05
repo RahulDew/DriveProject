@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useAuthContext } from "../context/AuthContext";
@@ -20,7 +20,7 @@ const Home = () => {
     }
   };
 
-  // event listeners called when scroll
+  // event listener called when scroll
   window.addEventListener("scroll", handleToggleVisible);
 
   // event listeners to update online state
@@ -31,8 +31,6 @@ const Home = () => {
     setOnline(false);
   });
 
-  // console.log(toasts);
-
   return (
     <div
       className={`w-full min-h-screen m-auto flex justify-center items-center ${
@@ -41,14 +39,14 @@ const Home = () => {
     >
       {/* Toast notification */}
       {toasts.length >= 1 && (
-        <div className="m-auto absolute top-6 flex justify-center items-center flex-col gap-2 text-center">
+        <div className="m-auto fixed top-6 flex justify-center items-center flex-col gap-2 text-center">
           {toasts?.map((toast, index) => (
             <Toast key={index} toast={toast} removeToast={removeToast} />
           ))}
         </div>
       )}
 
-      <div className="w-full sm:ml-16 lg:ml-20 text-center bg-[#E2EFFF] dark:bg-slate-950 duration-200 dark:text-white min-h-screen p-4 pb-28 sm:p-6 lg:px-8 lg:pt-4">
+      <div className="w-full min-h-screen sm:ml-16 lg:ml-20 text-center bg-[#E2EFFF] dark:bg-slate-950 duration-200 dark:text-white p-4 pb-28 sm:p-6 lg:px-8 lg:pt-4">
         <Navbar />
 
         {/* rendereing outlet */}
@@ -75,7 +73,7 @@ const Home = () => {
       </div>
 
       {!isOnline && (
-        <div className="fixed inset-0 z-40 overflow-y-auto">
+        <div className="fixed inset-0 z-40 overflow-y-auto no-scrollbar">
           <div className="fixed inset-0 bg-gray-800 opacity-70 dark:bg-slate-950 dark:opacity-80 transition-opacity"></div>
           <div className="flex min-h-full justify-center items-start mt-10 text-center">
             <motion.div

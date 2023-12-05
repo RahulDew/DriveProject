@@ -127,7 +127,7 @@ const SideNav = ({
       </aside>
 
       {logoutWarning && (
-        <div className="fixed inset-0 z-40 overflow-y-auto ">
+        <div className="fixed inset-0 z-40 overflow-y-auto no-scrollbar">
           <div
             onClick={() => setLogoutWarning(null)}
             className={

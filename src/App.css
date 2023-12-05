@@ -1,4 +1,13 @@
-:root {
+/* :root {
+} */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  min-height: 100vh;
+  /* min-width: 100vw; */
   background-color: #e2efff;
 }
 
@@ -22,7 +31,7 @@
   content: "";
   width: 100%;
   height: 30%;
-  border-radius: 1rem;
+  border-radius: 50px;
   filter: blur(100px) saturate(150%);
   text-align: center;
   margin: auto;
@@ -33,65 +42,33 @@
   z-index: 5;
 }
 
-/* .heybro {
-  background-color: blueviolet;
-} */
-.nuromorphic_button {
-  border-radius: 50px;
-  /* background: linear-gradient(145deg, #f0f0f0, #cacaca); */
-  box-shadow: 3px 3px 8px #6868688c;
-}
-.card_box_shadow {
-  box-shadow: 8px 8px 15px #aab2cec5, -8px -8px 15px #e2efff;
-}
 
-.img-wrap {
+
+/* .img-wrap {
   overflow: hidden;
-  /* height: 0; */
-  /* height: 120px; */
-  /* width: 120px; */
+  
   padding: 50% 0;
-  /* padding controls height, will always be perfectly square regardless of width */
   position: relative;
   align-items: center;
   display: flex;
   justify-content: center;
 
-  /* opacity: 0.8; */
 }
 .img-wrap img {
   min-width: 175%;
   min-height: 100%;
-  /* max-width: 175%; */
   position: absolute;
-  /* object-fit: contain; */
   object-position: center;
 
-  /* top: 0;
-  left: 0; */
-}
-/* .img-container div {
-  aspect-ratio: 3 / 2;
 } */
 
-/* .bhhhhhhh {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  aspect-ratio: 3 / 2;
-  object-position: center;
-} */
-
-.grid-container {
+/* .grid-container {
   display: grid;
   grid-template-columns: 1fr 2fr;
   grid-auto-rows: minmax(100px, auto);
-  /* grid-auto-flow: var(--var-packing); */
   gap: 10px;
-  /* background-color: var(--color-stroke); */
-  /* padding: 1em; */
+  
   height: 23rem;
-  /* max-width: 30rem; */
   margin: auto;
   width: 100%;
   justify-content: center;
@@ -114,6 +91,5 @@
   width: 100%;
   margin: auto;
   background-color: #c4d5e7;
-  /* background-color: var(--color-stroke); */
-  /* padding: 1em; */
-}
+  
+} */

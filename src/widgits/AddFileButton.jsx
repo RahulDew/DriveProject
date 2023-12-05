@@ -7,14 +7,14 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { v4 as uuidV4 } from "uuid";
 import { useAuthContext } from "../context/AuthContext";
 import { motion } from "framer-motion";
-import { AiFillFileAdd } from "react-icons/ai";
 import { LuFilePlus2 } from "react-icons/lu";
+import { FiUploadCloud } from "react-icons/fi";
 
 import FileDropZone from "./FileDropZone";
 // import Loader from "../components/Loader";
 
-const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
-  const [modelOpen, setModelOpen] = useState(false);
+const AddFileButton = ({ icon, currentFolder, button }) => {
+  const [isFilemodelOpen, setIsFileModelOpen] = useState(false);
   const [files, setFiles] = useState([]);
   // console.log(files);
 
@@ -60,7 +60,7 @@ const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
         );
         // console.log("ja rha h...");
         const uploadTask = uploadBytesResumable(filesFolderRef, file);
-        console.log("reply from server: ", uploadTask);
+        // console.log("reply from server: ", uploadTask);
         promices.push(uploadTask);
 
         uploadTask.on(
@@ -86,7 +86,7 @@ const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
                 return uploadFile;
               });
             });
-            console.log("Can't upload: ", err);
+            // console.log("Can't upload: ", err);
           },
           async () => {
             //gettting the file URL
@@ -105,16 +105,16 @@ const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
             const formattedOldFile = oldFilesRef.docs.map(
               formatter.formatDoc
             )[0];
-            console.log("formattedoldFile: ", formattedOldFile);
+            // console.log("formattedoldFile: ", formattedOldFile);
             // console.log("oldfile: ", oldFile.docs.map(formatter.formatDoc)[0]);
             if (formattedOldFile) {
               // console.log("oldfile h bhai: ", oldFile);
-              console.log("updating the old file...");
+              // console.log("updating the old file...");
               // alert("file is already available!");
               const oldFileRef = doc(database.files, formattedOldFile.id);
               await updateDoc(oldFileRef, { url: fileURL });
             } else {
-              console.log("ab new file create kr rha hu bhai!");
+              // console.log("ab new file create kr rha hu bhai!");
               const fileDocRef = await addDoc(database.files, {
                 url: fileURL,
                 name: file.name,
@@ -139,9 +139,14 @@ const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
         );
         // console.log(promices);
       });
-      handleShowToast(`uploading ${promices?.length}`, "success");
+      handleShowToast(
+        `uploading ${promices?.length} ${
+          promices?.length > 1 ? "Files" : "File"
+        }`,
+        "success"
+      );
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       alert(`failed to upload ${promices?.length - uploadableFiles?.length}`);
       handleShowToast(
         `failed to upload ${promices?.length - uploadableFiles?.length}`,
@@ -149,27 +154,47 @@ const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
       );
     }
 
-    setModelOpen(false);
+    setIsFileModelOpen(false);
   };
+  const fileKeyDownHandler = (e) => {
+    if (e.keyCode === 32 && e.ctrlKey) setIsFileModelOpen(true);
+  };
+
+  window.addEventListener("keydown", fileKeyDownHandler);
 
   return (
     <>
-      <div
-        onClick={() => setModelOpen(true)}
-        className={`cursor-pointer text-2xl p-2 
+      {button ? (
+        <div
+          onClick={() => setIsFileModelOpen(true)}
+          className={`cursor-pointer text-2xl p-2 
           bg-blue-600 text-white hover:bg-blue-700 
         flex justify-center items-center gap-1 rounded-xl shadow-md duration-300 font-semibold`}
-      >
-        <LuFilePlus2 />
-        <div className="hidden md:block text-lg b-2">File</div>
-      </div>
+        >
+          <LuFilePlus2 />
+          <div className="hidden md:block text-lg b-2">File</div>
+        </div>
+      ) : (
+        <>
+          <p className="text-xl text-slate-400 dark:text-slate-500">
+            No Files Available!
+          </p>
+          <div
+            onClick={() => setIsFileModelOpen(true)}
+            className="w-40 sm:w-44 my-3 p-4 flex justify-center items-center flex-col gap-1 cursor-pointer rounded-2xl bg-slate-50 dark:bg-slate-900 bg-opacity-60 dark:bg-opacity-60 hover:dark:bg-opacity-60 hover:bg-opacity-60 sm:bg-transparent sm:dark:bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900 text-blue-400 md:hover:text-blue-500 duration-200"
+          >
+            <LuFilePlus2 className="text-6xl sm:text-7xl cursor-pointer" />
+            <span className="text-base">Add New Files</span>
+          </div>
+        </>
+      )}
 
       {/* Add file Model */}
-      {modelOpen && (
-        <div className="fixed inset-0 z-30 overflow-y-auto ">
+      {isFilemodelOpen && (
+        <div className="fixed inset-0 z-30 overflow-y-auto no-scrollbar">
           <div
             onClick={() => {
-              setModelOpen(false);
+              setIsFileModelOpen(false);
               setFiles([]);
             }}
             className="fixed inset-0 bg-gray-800 opacity-70 dark:bg-slate-950 dark:opacity-80 transition-opacity"
@@ -201,9 +226,10 @@ const AddFileButton = ({ icon, currentFolder, mobileNav }) => {
                     Array.isArray(files) && files.length
                       ? "cursor-pointer"
                       : "cursor-not-allowed"
-                  } w-32 my-2 rounded-xl bg-blue-600 hover:bg-blue-700 p-3 text-[17px] font-semibold leading-6 text-white shadow-md duration-300`}
+                  } w-32 my-2 flex justify-center items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 p-3 text-[17px] font-semibold leading-6 text-white shadow-md duration-300`}
                 >
-                  Upload
+                  <FiUploadCloud className="text-2xl" />
+                  <span>Upload</span>
                 </button>
               </div>
             </motion.div>
