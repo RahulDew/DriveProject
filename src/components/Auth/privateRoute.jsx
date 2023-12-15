@@ -3,10 +3,12 @@ import { Outlet, Navigate, useLocation, Link } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import VerifyEmail from "../VerifyEmail";
 import AuthNav from "./AuthNav";
+import { useThemeContext } from "../../context/ThemeContext";
 
 const PrivateRoutes = () => {
   const Location = useLocation();
-  const { currentUser, handleToggleDarkMode, darkMode } = useAuthContext();
+  const { currentUser} = useAuthContext();
+  const { theme, themeToggle } = useThemeContext();
 
   return currentUser ? (
     currentUser.emailVerified ? (
@@ -17,8 +19,8 @@ const PrivateRoutes = () => {
         <div className="fixed special_gradient"></div>
         <div className="z-40 w-full text-black">
           <AuthNav
-            darkMode={darkMode}
-            handleToggleDarkMode={handleToggleDarkMode}
+            theme={theme}
+            themeToggle={themeToggle}
           />
           <VerifyEmail />
           {/* <footer className="bottom-0 mt-10">Stasher © 2023</footer> */}

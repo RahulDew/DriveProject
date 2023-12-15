@@ -1,27 +1,17 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../context/AuthContext";
 
 import { Formik } from "formik";
-import * as yup from "yup";
 
 import { motion } from "framer-motion";
 import { pageTitle } from "../../utils";
+import {
+  FORGET_PASSWORD_SCHEMA,
+  INITIAL_FORGET_PASSWORD_VALUES,
+} from "../../constants/constants";
 
-// forget password schema
-const forgetPasswordSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Invalid Email")
-    .required("Required!")
-    .max(50, "Must be not greater then 50 characters!"),
-});
-
-// initial values for all fields to signup form
-const initialForgetPasswordValues = {
-  email: "",
-};
 
 const ForgetPass = () => {
   pageTitle("Reset Password | Stasher");
@@ -73,8 +63,8 @@ const ForgetPass = () => {
       <div>
         <Formik
           onSubmit={handleFormikForgetPassword}
-          initialValues={initialForgetPasswordValues}
-          validationSchema={forgetPasswordSchema}
+          initialValues={INITIAL_FORGET_PASSWORD_VALUES}
+          validationSchema={FORGET_PASSWORD_SCHEMA}
         >
           {({
             values,

@@ -12,13 +12,15 @@ import { Link } from "react-router-dom";
 
 import { motion } from "framer-motion";
 import { pageTitle } from "../utils";
+import { useThemeContext } from "../context/ThemeContext";
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [itemsCount, setItemsCount] = useState(null);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const { theme, themeToggle } = useThemeContext();
 
-  const { currentUser, darkMode, handleToggleDarkMode } = useAuthContext();
+  const { currentUser } = useAuthContext();
 
   pageTitle("Profile | Stasher");
 
@@ -84,11 +86,13 @@ const Profile = () => {
             {/* user image */}
             <div className="w-[15rem] sm:w-[25rem] md:w-[30rem] lg:w-[20rem] xl:w-[22rem] h-60 lg:h-full rounded-3xl p-2">
               {currentUser?.photoURL ? (
-                <img
-                  src={currentUser.photoURL}
-                  alt=""
-                  className="h-full w-full object-cover rounded-3xl shadow-xl dark:shadow-none focus:shadow-blue-300 md:hover:shadow-blue-300 duration-200 bg-slate-50 dark:bg-slate-800 "
-                />
+                <Link to={currentUser.photoURL} target="_blank">
+                  <img
+                    src={currentUser.photoURL}
+                    alt=""
+                    className="h-full w-full object-cover rounded-3xl shadow-xl dark:shadow-none focus:shadow-blue-300 md:hover:shadow-blue-300 duration-200 bg-slate-50 dark:bg-slate-800 "
+                  />
+                </Link>
               ) : (
                 <div className="select-none bg-gradient-to-tl text-slate-50 from-slate-900 to-blue-700 h-full w-full flex justify-center items-center text-8xl lg:text-9xl font-semibold rounded-3xl shadow-xl dark:shadow-none focus:shadow-blue-300 md:hover:shadow-blue-300 duration-200">
                   {currentUser.displayName
@@ -106,9 +110,11 @@ const Profile = () => {
                   <FcFolder className="text-5xl sm:text-6xl" />
                   <div>
                     <span className="font-bold text-xl sm:text-3xl text-blue-600">
-                      {itemsCount?.foldersCount
-                        ? itemsCount?.foldersCount.count
-                        : "..."}
+                      {itemsCount?.foldersCount ? (
+                        itemsCount?.foldersCount.count
+                      ) : (
+                        <div className="animate-bounce">...</div>
+                      )}
                     </span>
                     <p className="text-xl font-semibold">Folders</p>
                   </div>
@@ -118,9 +124,11 @@ const Profile = () => {
                   <FcFile className="text-5xl sm:text-6xl" />
                   <div>
                     <span className="font-bold text-xl sm:text-3xl text-blue-600">
-                      {itemsCount?.filesCount
-                        ? itemsCount?.filesCount.count
-                        : "..."}
+                      {itemsCount?.filesCount ? (
+                        itemsCount?.filesCount.count
+                      ) : (
+                        <div className="animate-bounce">...</div>
+                      )}
                     </span>
                     <p className="text-xl font-semibold">Files</p>
                   </div>
@@ -145,10 +153,10 @@ const Profile = () => {
                 </Link>
                 {/* dark mode check */}
                 <div
-                  onClick={handleToggleDarkMode}
+                  onClick={themeToggle}
                   className="cursor-pointer w-full lg:w-[16rem] xl:w-[18rem] h-[6rem] xl:h-[6.5rem] bg-slate-50 dark:bg-slate-800 shadow-xl dark:shadow-none focus:shadow-blue-300 md:hover:shadow-blue-300 duration-200 rounded-2xl m-auto flex justify-evenly items-center p-2 lg:p-10 gap-2 sm:gap-5"
                 >
-                  {darkMode ? (
+                  {theme === "dark" ? (
                     <FaToggleOn className="text-5xl sm:text-6xl text-blue-600" />
                   ) : (
                     <FaToggleOff className="text-5xl sm:text-6xl text-slate-900" />

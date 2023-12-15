@@ -3,20 +3,16 @@ import React, { useState } from "react";
 import { Link, NavLink, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
-import Logo from "./logo";
-
 import { BiLogOut } from "react-icons/bi";
-import { IoIosTimer } from "react-icons/io";
-import { AiOutlineHome } from "react-icons/ai";
-import { BiSearchAlt2 } from "react-icons/bi";
-import { FaRegUser } from "react-icons/fa";
+import PopupWrapper from "./PopupWrapper";
+import { NAV_LINKS } from "../constants/constants";
 
-const links = [
-  { url: `/`, text: "All", icon: <AiOutlineHome /> },
-  { url: "/search", text: "Search", icon: <BiSearchAlt2 /> },
-  { url: "/recents", text: "Recents", icon: <IoIosTimer /> },
-  { url: "/profile", text: "Profile", icon: <FaRegUser /> },
-];
+// const NAV_LINKS = [
+//   { url: `/`, text: "All", icon: <AiOutlineHome /> },
+//   { url: "/search", text: "Search", icon: <BiSearchAlt2 /> },
+//   { url: "/recents", text: "Recents", icon: <IoIosTimer /> },
+//   { url: "/profile", text: "Profile", icon: <FaRegUser /> },
+// ];
 
 const SideNav = ({
   handleLogout,
@@ -25,8 +21,11 @@ const SideNav = ({
   setLogoutWarning,
   handleLogoutWarning,
 }) => {
-  // const { currentUser } = useAuthContext();
   const params = useParams();
+
+  const handleLogoutModelClose = () => {
+    setLogoutWarning(null);
+  };
 
   return (
     <>
@@ -91,7 +90,7 @@ const SideNav = ({
               </svg>
             </Link>
             <ul className=" w-full flex gap-3 sm:flex-col justify-evenly sm:justify-center items-center">
-              {links.map((link, index) => (
+              {NAV_LINKS.map((link, index) => (
                 <NavLink
                   key={index}
                   to={link.url}
@@ -127,54 +126,38 @@ const SideNav = ({
       </aside>
 
       {logoutWarning && (
-        <div className="fixed inset-0 z-40 overflow-y-auto no-scrollbar">
-          <div
-            onClick={() => setLogoutWarning(null)}
-            className={
-              "fixed inset-0 bg-gray-800 opacity-70 dark:bg-slate-950 dark:opacity-80 transition-opacity"
-            }
-          ></div>
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="w-full relative transform overflow-hidden rounded-xl bg-white dark:bg-slate-900 text-slate-950 dark:text-slate-50 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
-            >
-              {/* main content */}
-              <div className="p-8 px-20 flex justify-center items-center flex-col gap-5">
-                {logoutWarning.type == "logout" ? (
-                  <>
-                    {/* logout confirmation confirmation */}
-                    <div className="flex flex-col gap-2 text-lg text-center text-slate-500 dark:text-slate-300">
-                      <p className="text-2xl text-center font-semibold">
-                        Logout:
-                      </p>
-                      <p className="text-center text-lg text-slate-500 dark:text-slate-300">
-                        See you on next time, Dude
-                      </p>
-                      <span className="text-blue-600 font-semibold block">
-                        {currentUser.email}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="w-32 rounded-xl bg-red-500 hover:bg-red-600 duration-300 p-3 text-md font-semibold leading-6 text-white shadow-lg"
-                    >
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-3xl">NULL</p>
-                  </>
-                )}
-              </div>
-
-              {/* confirmation */}
-            </motion.div>
-          </div>
-        </div>
+        <PopupWrapper handleWrapperClose={handleLogoutModelClose}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full relative transform mx-5 sm:mx-auto overflow-hidden rounded-xl bg-white dark:bg-slate-900 text-slate-950 dark:text-slate-50 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+          >
+            {/* main content */}
+            <div className="p-8 px-20 flex justify-center items-center flex-col gap-5">
+              {logoutWarning.type === "logout" && (
+                <>
+                  {/* logout confirmation confirmation */}
+                  <div className="flex flex-col gap-2 text-lg text-center text-slate-500 dark:text-slate-300">
+                    <p className="text-2xl text-center font-semibold">Logout</p>
+                    <p className="text-center text-lg text-slate-500 dark:text-slate-300">
+                      See you on next time, Dude
+                    </p>
+                    <span className="text-blue-600 font-semibold block">
+                      {currentUser.email}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-32 rounded-xl bg-red-500 hover:bg-red-600 duration-300 p-3 text-md font-semibold leading-6 text-white shadow-lg"
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </PopupWrapper>
       )}
     </>
   );

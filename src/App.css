@@ -1,4 +1,33 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Mukta&display=swap");
+
 /* :root {
+  --bg-light-blue: #e2efff;
+  --bg-light-pureWhite: #f8fafc;
+  --bg-light-softWhite: #f8fafc;
+
+  --bg-dark-slate: #020617;
+  --bg-dark-softSlate: #0f172a;
+  --bg-dark-pureSlate: 1e293b;
+
+  --primary-dark-blue: #1d4ed8;
+  --primary-blue: #2563eb;
+}
+
+.dark {
+  background-color: var(--clr-bg-dark);
+  color: var(--clr-text-dark);
+}
+
+.light {
+  background-color: var(--clr-bg-light);
+  color: var(--clr-text-light);
+} */
+
+/* .font-archivo {
+  font-family: "Archivo Black", sans-serif;
+}
+.font-mukta {
+  font-family: "Mukta", sans-serif;
 } */
 * {
   padding: 0;
@@ -9,6 +38,28 @@ body {
   min-height: 100vh;
   /* min-width: 100vw; */
   background-color: #e2efff;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: rgb(11, 71, 200);
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: white;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgb(135, 143, 163);
+  border-radius: 5px;
+  border: 1px solid white;
 }
 
 .special_gradient {
@@ -41,8 +92,6 @@ body {
   opacity: 0.5;
   z-index: 5;
 }
-
-
 
 /* .img-wrap {
   overflow: hidden;

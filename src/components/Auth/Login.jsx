@@ -4,12 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 
 import { Formik } from "formik";
-import * as yup from "yup";
 import { motion } from "framer-motion";
 
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import GoogleSignin from "../../widgits/GoogleSignin";
 import { pageTitle } from "../../utils";
+import { LOGIN_SCHEMA, INITIAL_LOGIN_VALUES } from "../../constants/constants";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,25 +27,6 @@ const Login = () => {
     handleAuthError,
   } = useAuthContext();
 
-  const loginSchema = yup.object().shape({
-    email: yup
-      .string()
-      .email("Invalid Email")
-      .required("Required!")
-      .max(50, "Must be not greater then 50 characters!"),
-    password: yup.string().required("Required!"),
-    // .min(8, "Must contain atleast 8 characters!"),
-    // .matches(
-    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*[\]{}()?"\\,><':;|_~`=+-])[a-zA-Z\d!@#$%^&*[\]{}()?"\\,><':;|_~`=+-]{8,49}$/,
-    //   "Must contain 1 Uppercase, 1 Lowercase, 1 Special Character, and 1 Number"
-    // ),
-  });
-
-  // initial values for all fields to signup form
-  const initialLoginValues = {
-    email: "",
-    password: "",
-  };
 
   const handleFormikLogin = async (values, onSubmitProps) => {
     setAuthLoading(true);
@@ -93,8 +74,8 @@ const Login = () => {
       <div className="mt-5">
         <Formik
           onSubmit={handleFormikLogin}
-          initialValues={initialLoginValues}
-          validationSchema={loginSchema}
+          initialValues={INITIAL_LOGIN_VALUES}
+          validationSchema={LOGIN_SCHEMA}
         >
           {({
             values,

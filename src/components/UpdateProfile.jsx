@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Formik } from "formik";
-import * as yup from "yup";
 import FileDropZone from "../widgits/FileDropZone";
 
 import { useAuthContext } from "../context/AuthContext";
@@ -22,32 +21,7 @@ import { updateProfile } from "firebase/auth";
 import { storage } from "../config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { pageTitle } from "../utils";
-
-const initialProfileValues = {
-  username: "",
-  fullName: "",
-  DOB: "",
-  profileImageFile: null,
-};
-
-const profileSchema = yup.object().shape({
-  username: yup
-    .string()
-    .required("Required!")
-    .max(15, "Must be not greater then 15 characters!")
-    .min(5, "Must be atleast 5 characters")
-    .trim()
-    .nonNullable(),
-  fullName: yup
-    .string()
-    .required("Required!")
-    .max(50, "Must be not greater then 50 characters!")
-    .min(3, "Must be atleast 3 characters")
-    .trim()
-    .nonNullable(),
-  DOB: yup.date().required("Required!"),
-  profileImageFile: yup.mixed().nullable(),
-});
+import { PROFILE_SCHEMA, INITIAL_PROFILE_VALUES } from "../constants/constants";
 
 const UpdateProfile = ({ auth }) => {
   const [fileUploadStatus, setFileUploadStatus] = useState(null);
@@ -231,7 +205,7 @@ const UpdateProfile = ({ auth }) => {
 
   return (
     <div className="w-full gap-5 py-5">
-      {/* left info */}
+      {/* intro */}
       {auth ? (
         <div className="mx-auto w-full sm:w-5/6 lg:w-3/6 flex flex-col justify-center items-center gap-7">
           <p className="text-center text-2xl tracking-tight text-slate-700 dark:text-slate-400 font-semibold">
@@ -265,8 +239,8 @@ const UpdateProfile = ({ auth }) => {
       <div className="mt-2 sm:mx-auto sm:w-full sm:max-w-sm">
         <Formik
           onSubmit={handleFormikProfileUpdate}
-          initialValues={initialProfileValues}
-          validationSchema={profileSchema}
+          initialValues={INITIAL_PROFILE_VALUES}
+          validationSchema={PROFILE_SCHEMA}
         >
           {({
             values,

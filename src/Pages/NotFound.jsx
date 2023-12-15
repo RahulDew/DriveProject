@@ -1,13 +1,12 @@
 import React from "react";
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useThemeContext } from "../context/ThemeContext";
 
 const NotFound = () => {
-  const [darkMode, setDarkMode] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
+  const { theme } = useThemeContext();
+
   return (
-    <div className={`${darkMode ? "dark" : ""}`}>
+    <div className={`${theme === "dark" ? "dark" : ""}`}>
       <div
         className={`w-full text-center px-5 md:px-10 flex justify-center bg-[#E2EFFF] dark:bg-gray-950 duration-300`}
       >

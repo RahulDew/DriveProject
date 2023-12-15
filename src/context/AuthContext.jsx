@@ -10,15 +10,13 @@ import {
   signInWithPopup,
   onAuthStateChanged,
 } from "firebase/auth";
+import AuthorizingPage from "../Pages/AuthorizingPage";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState();
-  const [darkMode, setDarkMode] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
-  const [loading, setLoading] = useState(true);
+  const [authorizationLoading, setAuthorizationLoading] = useState(true);
   const [uploadingFiles, setUploadingFiles] = useState([]);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState("");
@@ -53,10 +51,6 @@ export const AuthProvider = ({ children }) => {
   };
   const resetPassword = (email) => {
     return sendPasswordResetEmail(auth, email);
-  };
-
-  const handleToggleDarkMode = () => {
-    setDarkMode((prevDarkMode) => !prevDarkMode);
   };
 
   const handleAuthError = (message) => {
@@ -101,8 +95,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentuser) => {
       // console.log(currentuser.email);
+      // console.log(currentuser);
       setCurrentUser(currentuser);
-      setLoading(false);
+      setAuthorizationLoading(false);
     });
 
     return () => {
@@ -125,8 +120,6 @@ export const AuthProvider = ({ children }) => {
     handleAuthError,
     contentLoading,
     setContentLoading,
-    darkMode,
-    handleToggleDarkMode,
     toasts,
     handleShowToast,
     removeToast,
@@ -134,8 +127,8 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={values}>
-      {/* childrens will only get values when loading is false */}
-      {!loading && children}
+      {/* childrens will only gets values and load/mount/render when authorizationLoading is false */}
+      {authorizationLoading ? <AuthorizingPage /> : children}
     </AuthContext.Provider>
   );
 };

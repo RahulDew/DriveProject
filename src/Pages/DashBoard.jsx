@@ -9,15 +9,13 @@ import File from "../components/File";
 import FolderBreadCrumb from "../components/FolderBreadCrumb";
 import Loader from "../components/Loader";
 import { motion } from "framer-motion";
-import { FcOpenedFolder, FcFile } from "react-icons/fc";
 import { pageTitle } from "../utils";
-import Tooltip from "../widgits/Tooltip";
 
 const DashBoard = () => {
   pageTitle("Home | Stasher");
 
   const { folderId } = useParams();
-  const { state = {} } = useLocation();
+  // const { state = {} } = useLocation();
 
   // console.log(state);
   const { folder, childFolders, childFiles } = useFolder(folderId);
@@ -42,8 +40,13 @@ const DashBoard = () => {
       </div>
 
       {/* parent folder name */}
-      <div className="mb-4 pb-2 px-2 sm:px-5 text-xl rounded-xl font-semibold  text-slate-700 dark:text-slate-300 left-0 text-left break-all ">
-        Folders of {folder ? folder.name : "..."}
+      <div className="mb-4 pb-2 px-2 sm:px-5 text-xl rounded-xl font-semibold text-slate-700 dark:text-slate-300 left-0 text-left break-all flex gap-2">
+        Folders of
+        {folder ? (
+          <div>{folder.name}</div>
+        ) : (
+          <div className="animate-bounce">...</div>
+        )}
       </div>
 
       {/* Child Folders */}
@@ -72,10 +75,15 @@ const DashBoard = () => {
       )}
 
       {/* line break */}
-      <hr className="font-bold border-slate-300 dark:border-slate-700 my-4 duration-200" />
+      <hr className="font-bold border-slate-300 dark:border-slate-700 my-6 duration-200" />
 
-      <div className="mb-4 pb-2 px-2 sm:px-5 text-xl rounded-xl font-semibold  text-slate-700 dark:text-slate-300 left-0 text-left break-all">
-        Files of {folder ? folder.name : "..."}
+      <div className="mb-4 pb-2 px-2 sm:px-5 text-xl rounded-xl font-semibold text-slate-700 dark:text-slate-300 left-0 text-left break-all flex gap-2">
+        Files of
+        {folder ? (
+          <div>{folder.name}</div>
+        ) : (
+          <div className="animate-bounce">...</div>
+        )}
       </div>
 
       {/* Child Files */}
@@ -86,7 +94,7 @@ const DashBoard = () => {
               <motion.div
                 layout
                 // transition={{ delay: 3 }}
-                initial={{ opacity: 0.5 }}
+                initial={{ opacity: 0.6 }}
                 animate={{ opacity: 1 }}
                 // transition={{ duration: 0.2 }}
                 key={childFile.id}

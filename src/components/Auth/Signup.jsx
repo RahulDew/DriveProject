@@ -1,45 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-// imports for form validation
 import { Formik } from "formik";
-import * as yup from "yup";
 import { motion } from "framer-motion";
 
 import { useAuthContext } from "../../context/AuthContext";
 import GoogleSignin from "../../widgits/GoogleSignin";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { pageTitle } from "../../utils";
+import {
+  SIGNUP_SCHEMA,
+  INITIAL_SIGNUP_VALUES,
+} from "../../constants/constants";
 
-// creating schema using yup library for validation
-const signupSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Invalid Email")
-    .required("Required!")
-    .max(50, "Must be not greater then 50 characters!"),
-  password: yup
-    .string()
-    .required("Required!")
-    .min(8, "Must contain atleast 8 characters!")
-    .max(100, "Maximum of 100 characters!")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*[\]{}()?"\\,><':;|_~`=+-])[a-zA-Z\d!@#$%^&*[\]{}()?"\\,><':;|_~`=+-]{8,49}$/,
-      "Must contain 1 Uppercase, 1 Lowercase, 1 Special Character, and 1 Number"
-    ),
-  confirmPassword: yup
-    .string()
-    .required("Required!")
-    // .min(8, "Must be atleast 8 characters!")
-    .oneOf([yup.ref("password")], "Please Enter same password!!!"),
-});
-
-// initial values for all fields to signup form
-const initialSignupValues = {
-  email: "",
-  password: "",
-  confirmPassword: "",
-};
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -101,8 +74,8 @@ const Signup = () => {
       <div className="mt-5">
         <Formik
           onSubmit={handleFormikSignup}
-          initialValues={initialSignupValues}
-          validationSchema={signupSchema}
+          initialValues={INITIAL_SIGNUP_VALUES}
+          validationSchema={SIGNUP_SCHEMA}
         >
           {({
             values,

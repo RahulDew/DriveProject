@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { HiOutlineHome } from "react-icons/hi";
 import { ROOT_FOLDER } from "../hooks/useFolder";
 import { Link } from "react-router-dom";
 import { MdOutlineNavigateNext } from "react-icons/md";
@@ -11,24 +10,20 @@ const FolderBreadCrumb = ({ currentFolder }) => {
 
   useEffect(() => {
     const container = containerRef.current;
-    // Scroll to the right on mount or whenever content changes
-    container.scrollLeft = container.scrollWidth;
 
     // You can also add an event listener for dynamic updates
-    // container.addEventListener('scroll', handleScroll);
+    container.addEventListener("scroll", handleScroll(container));
 
     // Clean up the event listener on component unmount
-    // return () => container.removeEventListener('scroll', handleScroll);
+    return () =>
+      container.removeEventListener("scroll", handleScroll(container));
   }, [path.length]);
 
-  // You can use the following function if you want to handle scroll events dynamically
-  
-  // const handleScroll = () => {
-  //   // Your scroll handling logic here
-  // const container = containerRef.current;
-  // // You can adjust the scroll speed by changing the 'scrollBy' value
-  // container.scrollBy({ left: 100, behavior: "smooth" });
-  // };
+  const handleScroll = (container) => {
+    // Your scroll handling logic here
+    // Scroll to the right on mount or whenever content changes
+    container.scrollLeft = container.scrollWidth;
+  };
 
   return (
     <div
@@ -59,7 +54,7 @@ const FolderBreadCrumb = ({ currentFolder }) => {
           {currentFolder.name}
         </div>
       ) : (
-        <div className="sm:truncate text-blue-600 select-none">...</div>
+        <div className="sm:truncate text-blue-600 select-none animate-bounce">...</div>
       )}
     </div>
   );

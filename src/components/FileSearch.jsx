@@ -10,6 +10,10 @@ import { motion } from "framer-motion";
 import { query, where, onSnapshot } from "firebase/firestore";
 import { database } from "../config/firebase";
 import { formatter } from "../config/firebase";
+import {
+  FILE_SEARCH_SCHEMA,
+  INITIAL_FILE_SEARCH_VALUES,
+} from "../constants/constants";
 
 import { LuFileSearch } from "react-icons/lu";
 
@@ -65,8 +69,8 @@ const FileSearch = ({ contentLoading, setContentLoading, currentUser }) => {
     <div className="w-full">
       <Formik
         onSubmit={handleFormikFileSearch}
-        initialValues={initialFileSearchValues}
-        validationSchema={fileSearchSchema}
+        initialValues={INITIAL_FILE_SEARCH_VALUES}
+        validationSchema={FILE_SEARCH_SCHEMA}
       >
         {({
           values,

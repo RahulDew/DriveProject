@@ -2,10 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FiMoon, FiSun } from "react-icons/fi";
 
-const AuthNav = ({ darkMode, handleToggleDarkMode }) => {
-  // const handleChangeDarkMode = () => {
-  //   setDarkMode((prev) => !prev);
-  // };
+const AuthNav = ({ theme, themeToggle }) => {
   return (
     <div className="flex justify-between items-center">
       <Link to={"/"} className="flex items-center justify-center sm:gap-3">
@@ -60,13 +57,13 @@ const AuthNav = ({ darkMode, handleToggleDarkMode }) => {
             </clipPath>
           </defs>
         </svg>
-        <h2 className="text-3xl font-bold">Stasher</h2>
+        <h2 className="text-3xl font-bold mb-1">Stasher</h2>
       </Link>
       <div
-        onClick={handleToggleDarkMode}
+        onClick={themeToggle}
         className="shadow-lg dark:shadow-none cursor-pointer p-2 bg-white text-slate-800 dark:bg-slate-700 dark:text-white w-10 h-10 flex justify-center items-center rounded-full text-2xl duration-200"
       >
-        {darkMode ? <FiSun /> : <FiMoon />}
+        {theme === "dark" ? <FiSun /> : <FiMoon />}
       </div>
     </div>
   );

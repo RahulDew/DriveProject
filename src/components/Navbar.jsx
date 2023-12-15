@@ -6,11 +6,11 @@ import { FiUploadCloud, FiMoon, FiSun } from "react-icons/fi";
 
 import SideNav from "./SideNav";
 import UploadingFileCard from "../widgits/UploadingFileCard";
-// import DropdownOptions from
 import DropdownOption from "../widgits/DropdownOption";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { BiLogOut } from "react-icons/bi";
+import PopupWrapper from "./PopupWrapper";
+import { useThemeContext } from "../context/ThemeContext";
 const Navbar = () => {
   const [showUploadings, setShowUploadings] = useState(false);
   const [toggleDropdown, setToggleDropdown] = useState(false);
@@ -19,13 +19,8 @@ const Navbar = () => {
   const Navigate = useNavigate();
   const location = useLocation();
 
-  const {
-    logOut,
-    uploadingFiles,
-    currentUser,
-    handleToggleDarkMode,
-    darkMode,
-  } = useAuthContext();
+  const { theme, themeToggle } = useThemeContext();
+  const { logOut, uploadingFiles, currentUser } = useAuthContext();
 
   const handleLogout = async () => {
     try {
@@ -41,6 +36,10 @@ const Navbar = () => {
     setLogoutWarning({
       type: "logout",
     });
+  };
+
+  const handleCloseUploadingsModel = () => {
+    setShowUploadings(false);
   };
 
   return (
@@ -108,17 +107,19 @@ const Navbar = () => {
             </defs>
           </svg>
         </div>
-        <span className="font-bold text-3xl">Stasher</span>
+        <span className="font-bold text-3xl font-archivo sm:mb-1 lg:mb-auto">
+          Stasher
+        </span>
       </Link>
 
       {/* desktop navigation */}
       <div className="hidden sm:flex items-center justify-between gap-5">
         {/* dark mode toggler */}
         <div
-          onClick={handleToggleDarkMode}
+          onClick={themeToggle}
           className="hidden cursor-pointer h-11 w-11 bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-50 hover:text-blue-600 hover:bg-white dark:hover:text-blue-600 dark:hover:bg-slate-800  sm:flex justify-center items-center rounded-2xl text-xl sm:text-2xl shadow-md duration-200"
         >
-          {darkMode ? <FiSun /> : <FiMoon />}
+          {theme === "dark" ? <FiSun /> : <FiMoon />}
         </div>
         {/* uploading files button */}
         <div
@@ -212,8 +213,8 @@ const Navbar = () => {
         {toggleDropdown && (
           <DropdownOption
             setToggleDropdown={setToggleDropdown}
-            handleToggleDarkMode={handleToggleDarkMode}
-            darkMode={darkMode}
+            themeToggle={themeToggle}
+            theme={theme}
             handleLogoutWarning={handleLogoutWarning}
             currentUser={currentUser}
           />
@@ -222,13 +223,7 @@ const Navbar = () => {
 
       {/* <!-- drawer component --> */}
       {showUploadings && (
-        <div className="fixed inset-0 z-20 overflow-y-auto no-scrollbar">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
-            className="fixed inset-0 bg-slate-800 opacity-70 dark:bg-slate-950 dark:opacity-80 transition-opacity"
-            onClick={() => setShowUploadings(false)}
-          ></motion.div>
+        <PopupWrapper handleWrapperClose={handleCloseUploadingsModel}>
           <motion.div
             initial={{ x: "2vw" }}
             animate={{ x: 0 }}
@@ -251,7 +246,7 @@ const Navbar = () => {
               </div>
             )}
           </motion.div>
-        </div>
+        </PopupWrapper>
       )}
     </nav>
   );

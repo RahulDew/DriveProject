@@ -18,11 +18,8 @@ import VerifyEmail from "./components/VerifyEmail";
 import Auth from "./Pages/Auth";
 import Home from "./Pages/Home";
 import NotFound from "./Pages/NotFound";
-import { useAuthContext } from "./context/AuthContext";
 
 function App() {
-  // const { currentUser } = useAuthContext();
-  // console.log(currentUser);
   return (
     <>
       <Router>

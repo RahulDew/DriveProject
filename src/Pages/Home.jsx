@@ -5,11 +5,16 @@ import { useAuthContext } from "../context/AuthContext";
 import { AiOutlineArrowUp } from "react-icons/ai";
 import Toast from "../widgits/Toast";
 import { motion } from "framer-motion";
+import { useThemeContext } from "../context/ThemeContext";
 
 const Home = () => {
-  const { darkMode, toasts, removeToast } = useAuthContext();
   const [toggleVisible, setToggleVisible] = useState(false);
   const [isOnline, setOnline] = useState(true);
+
+
+  const { theme } = useThemeContext();
+  const { toasts, removeToast } = useAuthContext();
+
 
   const handleToggleVisible = () => {
     const scrolled = document.documentElement.scrollTop;
@@ -34,7 +39,7 @@ const Home = () => {
   return (
     <div
       className={`w-full min-h-screen m-auto flex justify-center items-center ${
-        darkMode ? "dark" : ""
+        theme === "dark" ? "dark" : ""
       }`}
     >
       {/* Toast notification */}
@@ -46,7 +51,7 @@ const Home = () => {
         </div>
       )}
 
-      <div className="w-full min-h-screen sm:ml-16 lg:ml-20 text-center bg-[#E2EFFF] dark:bg-slate-950 duration-200 dark:text-white p-4 pb-28 sm:p-6 lg:px-8 lg:pt-4">
+      <div className="w-full min-h-screen sm:ml-16 lg:ml-20 text-center bg-[#E2EFFF] dark:bg-slate-950 duration-200 dark:text-white p-4 pb-28 sm:p-6 lg:px-8 lg:pt-4 lg:pb-28">
         <Navbar />
 
         {/* rendereing outlet */}
@@ -79,11 +84,14 @@ const Home = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="w-72 text-lg relative overflow-hidden rounded-xl font-semibold bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-left shadow-xl"
+              className="w-72 md:w-96 text-lg relative overflow-hidden rounded-2xl font-semibold bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-left shadow-xl"
             >
               {/* main content */}
-              <div className="p-4 flex justify-center items-center">
-                NO Internet Connection !!!
+              <div className="p-4 flex justify-center items-center flex-col gap-3">
+                <h2 className="text-red-500">No Internet !</h2>
+                <p className="text-base text-center font-normal">
+                  Please check your internet connection
+                </p>
               </div>
             </motion.div>
           </div>

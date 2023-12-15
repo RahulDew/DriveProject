@@ -10,15 +10,15 @@ import { query, where, onSnapshot } from "firebase/firestore";
 import { database } from "../config/firebase";
 import { formatter } from "../config/firebase";
 import { pageTitle } from "../utils";
-// import { Timestamp } from "firebase/firestore";
+import { RECENT_FILES_TIME_STAMPS } from "../constants/constants";
 
-const recentFilesTimeStamps = [
-  { text: "5", time: 5 },
-  { text: "10", time: 10 },
-  { text: "15", time: 15 },
-  { text: "25", time: 25 },
-  { text: "30", time: 30 },
-];
+// const RECENT_FILES_TIME_STAMPS = [
+//   { text: "5", time: 5 },
+//   { text: "10", time: 10 },
+//   { text: "15", time: 15 },
+//   { text: "25", time: 25 },
+//   { text: "30", time: 30 },
+// ];
 
 const Recents = () => {
   const [recentFiles, setRecentFiles] = useState(null);
@@ -71,7 +71,7 @@ const Recents = () => {
         {/* timestamp filter */}
         <div>
           <div className="w-full sm:w-5/6 md:w-[39rem] flex gap-1.5 items-center justify-between bg-slate-50 dark:bg-slate-900 shadow-xl hover:shadow-blue-200 dark:shadow-none rounded-full p-2 md:p-3 text-xs md:text-[17px] font-semibold duration-300">
-            {recentFilesTimeStamps.map((timeStamp, index) => (
+            {RECENT_FILES_TIME_STAMPS.map((timeStamp, index) => (
               <div
                 key={index}
                 onClick={() => setRecentFilesTime(timeStamp.time)}
@@ -113,10 +113,13 @@ const Recents = () => {
             <div className="mt-24">
               <h3 className="text-2xl font-light">
                 You haven't uploaded any file in previous
-                {recentFilesTimeStamps.map(
+                {RECENT_FILES_TIME_STAMPS.map(
                   (timeStamp, index) =>
                     timeStamp.time == recentFilesTime && (
-                      <span key={index} className="text-blue-600 mx-2 font-semibold">
+                      <span
+                        key={index}
+                        className="text-blue-600 mx-2 font-semibold"
+                      >
                         {timeStamp.text}
                       </span>
                     )

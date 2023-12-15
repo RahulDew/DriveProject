@@ -11,6 +11,8 @@ import { LuFilePlus2 } from "react-icons/lu";
 import { FiUploadCloud } from "react-icons/fi";
 
 import FileDropZone from "./FileDropZone";
+import { FcFile } from "react-icons/fc";
+import PopupWrapper from "../components/PopupWrapper";
 // import Loader from "../components/Loader";
 
 const AddFileButton = ({ icon, currentFolder, button }) => {
@@ -156,11 +158,17 @@ const AddFileButton = ({ icon, currentFolder, button }) => {
 
     setIsFileModelOpen(false);
   };
-  const fileKeyDownHandler = (e) => {
-    if (e.keyCode === 32 && e.ctrlKey) setIsFileModelOpen(true);
+
+  const handleCloseFileModel = () => {
+    setIsFileModelOpen(false);
+    setFiles([]);
   };
 
-  window.addEventListener("keydown", fileKeyDownHandler);
+  // const fileKeyDownHandler = (e) => {
+  //   if (e.keyCode === 32 && e.ctrlKey) setIsFileModelOpen(true);
+  // };
+
+  // window.addEventListener("keydown", fileKeyDownHandler);
 
   return (
     <>
@@ -176,65 +184,53 @@ const AddFileButton = ({ icon, currentFolder, button }) => {
         </div>
       ) : (
         <>
-          <p className="text-xl text-slate-400 dark:text-slate-500">
-            No Files Available!
-          </p>
+          <FcFile className="text-6xl sm:text-8xl cursor-pointer opacity-70 dark:opacity-60 " />
           <div
             onClick={() => setIsFileModelOpen(true)}
-            className="w-40 sm:w-44 my-3 p-4 flex justify-center items-center flex-col gap-1 cursor-pointer rounded-2xl bg-slate-50 dark:bg-slate-900 bg-opacity-60 dark:bg-opacity-60 hover:dark:bg-opacity-60 hover:bg-opacity-60 sm:bg-transparent sm:dark:bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900 text-blue-400 md:hover:text-blue-500 duration-200"
+            className="mt-2 p-2 px-4 flex justify-center items-center gap-2 cursor-pointer rounded-xl bg-transparent dark:bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900 text-blue-400 dark:text-blue-300 md:dark:hover:text-blue-400 duration-200"
           >
-            <LuFilePlus2 className="text-6xl sm:text-7xl cursor-pointer" />
-            <span className="text-base">Add New Files</span>
+            <LuFilePlus2 className="text-3xl cursor-pointer" />
+            <span className="text-sm sm:text-lg font-semibold">Add Files</span>
           </div>
         </>
       )}
 
       {/* Add file Model */}
       {isFilemodelOpen && (
-        <div className="fixed inset-0 z-30 overflow-y-auto no-scrollbar">
-          <div
-            onClick={() => {
-              setIsFileModelOpen(false);
-              setFiles([]);
-            }}
-            className="fixed inset-0 bg-gray-800 opacity-70 dark:bg-slate-950 dark:opacity-80 transition-opacity"
-          ></div>
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+        <PopupWrapper handleWrapperClose={handleCloseFileModel}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full relative transform overflow-hidden mx-5 sm:mx-auto rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-950 dark:text-slate-50 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl"
+          >
             {/* main content */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="w-full relative transform overflow-hidden rounded-2xl bg-slate-50 dark:bg-slate-900 text-slate-950 dark:text-slate-50 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl"
-            >
-              {/* main content */}
-              <div className="flex flex-col justify-center items-center gap-5 px-6 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <h3 className="font-semibold text-xl">Upload your files</h3>
-                <div
-                  className={`w-full sm:w-10/12 h-56 flex justify-center items-center border-2 border-dashed ${
-                    Array.isArray(files) && files.length
-                      ? "border-blue-600"
-                      : "border-slate-600 dark:border-slate-300 "
-                  } rounded-xl`}
-                >
-                  <FileDropZone files={files} setFiles={setFiles} />
-                </div>
-                <button
-                  type="submit"
-                  disabled={Array.isArray(files) && files.length ? false : true}
-                  onClick={handleUploadFiles}
-                  className={`${
-                    Array.isArray(files) && files.length
-                      ? "cursor-pointer"
-                      : "cursor-not-allowed"
-                  } w-32 my-2 flex justify-center items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 p-3 text-[17px] font-semibold leading-6 text-white shadow-md duration-300`}
-                >
-                  <FiUploadCloud className="text-2xl" />
-                  <span>Upload</span>
-                </button>
+            <div className="flex flex-col justify-center items-center gap-5 px-6 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <h3 className="font-semibold text-xl">Upload your files</h3>
+              <div
+                className={`w-full sm:w-10/12 h-56 flex justify-center items-center border-2 border-dashed ${
+                  Array.isArray(files) && files.length
+                    ? "border-blue-600"
+                    : "border-slate-600 dark:border-slate-300 "
+                } rounded-xl`}
+              >
+                <FileDropZone files={files} setFiles={setFiles} />
               </div>
-            </motion.div>
-          </div>
-        </div>
+              <button
+                type="submit"
+                disabled={Array.isArray(files) && files.length ? false : true}
+                onClick={handleUploadFiles}
+                className={`${
+                  Array.isArray(files) && files.length
+                    ? "cursor-pointer"
+                    : "cursor-not-allowed"
+                } w-32 my-2 flex justify-center items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 p-3 text-[17px] font-semibold leading-6 text-white shadow-md duration-300`}
+              >
+                <FiUploadCloud className="text-2xl" />
+                <span>Upload</span>
+              </button>
+            </div>
+          </motion.div>
+        </PopupWrapper>
       )}
     </>
   );

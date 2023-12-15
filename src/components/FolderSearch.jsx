@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Formik } from "formik";
-import * as yup from "yup";
 
 import Loader from "../components/Loader";
 
@@ -10,24 +9,16 @@ import { motion } from "framer-motion";
 import { query, where, onSnapshot } from "firebase/firestore";
 import { database } from "../config/firebase";
 import { formatter } from "../config/firebase";
+import {
+  FOLDER_SEARCH_SCHEMA,
+  INITIAL_FOLDER_SEARCH_VALUES,
+} from "../constants/constants";
 
 import { LuFolderSearch } from "react-icons/lu";
 
 import { FiX } from "react-icons/fi";
 import { FcFolder, FcOpenedFolder } from "react-icons/fc";
 
-const folderSearchSchema = yup.object().shape({
-  folderName: yup
-    .string()
-    .max(20, "Folder name not greater then 20 characters!")
-    .min(2, "Folder name should have atleast 3 characters!")
-    .trim("Your Folder should have a name")
-    .nonNullable("Your Folder should have a name"),
-});
-
-const initialFolderSearchValues = {
-  folderName: "",
-};
 
 const FolderSearch = ({ contentLoading, setContentLoading, currentUser }) => {
   const [isSearching, setIsSearching] = useState(false);
@@ -62,8 +53,8 @@ const FolderSearch = ({ contentLoading, setContentLoading, currentUser }) => {
     <motion.div className="w-full">
       <Formik
         onSubmit={handleFormikFolerSearch}
-        initialValues={initialFolderSearchValues}
-        validationSchema={folderSearchSchema}
+        initialValues={INITIAL_FOLDER_SEARCH_VALUES}
+        validationSchema={FOLDER_SEARCH_SCHEMA}
       >
         {({
           values,
