@@ -1,5 +1,5 @@
 # Stasher - The Personal Drive
-### Visit Demo - https://stasherdrive.netlify.app/
+### Live - 🔗 https://stasherdrive.netlify.app/ 
 
 ## Welcome to your personal drive, a secure repository designed for storing and managing your files and documents with ease and efficiency
 
@@ -34,24 +34,24 @@
 
 
 ### Recent Files pages - 
-#### find your files which you have uploaded last 5 to  30 days
+#### Find your files which you have uploaded last 5 to  30 days
 
 ![image](https://github.com/RahulDew/DriveProject/assets/86983295/1365ab10-010a-441b-8fb2-785cffe386b6)
 
 
 ### Uploading Files - 
-#### heck uploading status of your file
+#### Check uploading status of your file
 
 ![image](https://github.com/RahulDew/DriveProject/assets/86983295/fa50dd09-779a-4dd5-948a-b02ce6746c45)
 
 
 ### Profile Page - 
-#### visit and customize your profile
+#### Visit and customize your profile
 
 ![image](https://github.com/RahulDew/DriveProject/assets/86983295/e6d225ca-430e-4c14-9904-d2224ae4f4be)
 
 
-###Dark Mode for all pages 
+### Dark Mode for all pages 
 
 ![image](https://github.com/RahulDew/DriveProject/assets/86983295/f5b2e989-cda7-442b-910b-6574e298de3f)
 
