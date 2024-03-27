@@ -1,7 +1,14 @@
 # Stasher - The Personal Drive
-## Visit Demo - https://stasherdrive.netlify.app/
+### Visit Demo - https://stasherdrive.netlify.app/
 
 ## Welcome to your personal drive, a secure repository designed for storing and managing your files and documents with ease and efficiency
+
+### Tech Used :
+#### ReactJs - An open-source JavaScript library for building dynamic user interfaces using reusable UI components and a virtual DOM for efficient rendering.
+#### Firebase - A comprehensive platform by Google that offers a range of services for building and managing web and mobile applications,.
+#### Tailwind CSS - A utility-first CSS framework that enables rapid UI development by providing a comprehensive set of pre-built utility classes,
+#### Farmik and Yup - Formik is a form library for React that helps manage form state and validation, Yup is a schema validation library often used in conjunction with Formik for defining validation rules.
+
 
 ### Onboarding(Welcome) Page
 ![image](https://github.com/RahulDew/DriveProject/assets/86983295/368f2cd6-756e-4f56-8016-4328644a5ea8)
